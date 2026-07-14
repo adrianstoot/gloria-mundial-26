@@ -81,3 +81,16 @@ Fuentes de generación conservadas en el almacén local de Codex:
 `exec-8ec2fcb1-6f9f-4fa5-8bf9-519f439ee078.png`,
 `exec-ddcfabcf-9a48-44bc-ad1a-6c9ae78cee10.png` y
 `exec-6bef0a7b-2c29-42b2-87c6-8ba6c8ca8392.png`.
+
+## Entrenadores ficticios del prólogo
+
+Generados el 14 de julio de 2026 con la herramienta integrada `imagegen`.
+Son tres personajes ficticios sin parecido deliberado con entrenadores reales,
+marcas, escudos, patrocinadores, texto ni marcas de agua:
+
+- `coaches/amine-el-mansouri.webp`: estratega árabe/norteafricano.
+- `coaches/lukas-varga.webp`: arquitecto centroeuropeo.
+- `coaches/tomas-ferreyra.webp`: motivador sudamericano.
+
+Los PNG maestros y el resumen de prompts se conservan en
+`assets/source/coaches`; el juego distribuye WebP 800×1000 optimizados.

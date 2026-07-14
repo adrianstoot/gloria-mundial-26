@@ -4,10 +4,24 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig(({ mode }) => {
   const pagesBase = mode === 'pages' ? '/gloria-mundial-26/' : '/'
+  const publicAssetBase = {
+    name: 'gm26-public-asset-base',
+    enforce: 'pre' as const,
+    transform(code: string, id: string) {
+      if (mode !== 'pages' || !id.endsWith('.css')) return null
+      return {
+        code: code
+          .replaceAll("url('/assets/", `url('${pagesBase}assets/`)
+          .replaceAll('url("/assets/', `url("${pagesBase}assets/`),
+        map: null,
+      }
+    },
+  }
 
   return {
     base: pagesBase,
     plugins: [
+      publicAssetBase,
       react(),
       VitePWA({
         registerType: 'prompt',

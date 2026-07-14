@@ -27,6 +27,7 @@ import type { MetricEffects } from './features/concentrationData'
 import { disciplineEventsFromSimulation, suspendedPlayerIds } from './features/discipline'
 import { injuredPlayerIds, injuryEventsFromSimulation } from './features/availability'
 import { generateAgenda, generateWorldNotifications } from './features/campaignDirector'
+import { defaultCoachProfile, isCoachProfileId } from './features/coachProfiles'
 
 interface GameContextValue {
   campaign: CampaignUIState
@@ -47,7 +48,7 @@ const STORAGE_KEY = 'gm26-ui-campaign-v3'
 const LEGACY_STORAGE_KEY = 'gm26-ui-campaign-v2'
 const SLOT_ID = 'campaign-slot-1'
 
-function hydrateCampaign(value: Partial<CampaignUIState> = {}): CampaignUIState {
+export function hydrateCampaign(value: Partial<CampaignUIState> = {}): CampaignUIState {
   const hydrated: CampaignUIState = {
     ...initialCampaign,
     ...value,
@@ -60,7 +61,12 @@ function hydrateCampaign(value: Partial<CampaignUIState> = {}): CampaignUIState 
     worldNotifications: value.worldNotifications ?? [],
     assistantMemory: { ...initialCampaign.assistantMemory, ...value.assistantMemory },
     focusMemory: { ...initialCampaign.focusMemory, ...value.focusMemory },
-    manager: { ...initialCampaign.manager, ...value.manager },
+    manager: {
+      ...initialCampaign.manager,
+      ...value.manager,
+      coachId: isCoachProfileId(value.manager?.coachId) ? value.manager.coachId : defaultCoachProfile.id,
+    },
+    coachAppliedId: isCoachProfileId(value.coachAppliedId) ? value.coachAppliedId : undefined,
     inboxRead: value.inboxRead ?? [],
     squadIds: value.squadIds ?? [],
     squadConfirmed: Boolean(value.squadConfirmed && value.squadIds?.length === 26),

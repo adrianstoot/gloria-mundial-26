@@ -84,6 +84,7 @@ export interface ManagerProfile {
   surname: string
   nationality: string
   experience: 'novato' | 'profesional' | 'leyenda'
+  coachId: import('./coachProfiles').CoachProfileId
 }
 
 export type AgendaEventType = 'match' | 'travel' | 'training' | 'recovery' | 'press' | 'medical' | 'meeting' | 'leisure' | 'federation' | 'news'
@@ -149,6 +150,7 @@ export interface CampaignUIState {
   assistantMemory: AssistantMemory
   focusMemory: Record<string, string>
   manager: ManagerProfile
+  coachAppliedId?: import('./coachProfiles').CoachProfileId
   nationId: string
   difficulty: 'accesible' | 'realista' | 'leyenda'
   squadIds: string[]
@@ -228,7 +230,7 @@ export const initialCampaign: CampaignUIState = {
   worldNotifications: [],
   assistantMemory: { heardBriefingIds: [], appliedActionIds: [], dismissedActionIds: [], postponedActionIds: [] },
   focusMemory: { hub: 'calendar' },
-  manager: { name: '', surname: '', nationality: 'España', experience: 'novato' },
+  manager: { name: '', surname: '', nationality: 'España', experience: 'novato', coachId: 'amine-el-mansouri' },
   nationId: defaultNation?.id ?? '',
   difficulty: 'realista',
   squadIds: [],
