@@ -1,0 +1,181 @@
+/* The tournament area deliberately uses a larger, simpler type scale than the
+   dense management screens. Everything remains scoped to .tournament-page. */
+.tournament-page { --calendar-copy: #a9bbc9; --calendar-dim: #71899c; }
+.tournament-page .tournament-banner { min-height: 190px; padding: 30px; }
+.tournament-page .tournament-banner h2 { font-size: 39px; }
+.tournament-page .tournament-banner p { color: #91a5b5; font-size: 12px; }
+.tournament-page .tournament-banner > div:last-child { margin-top: 20px; color: #8299ab; font-size: 10px; }
+.tournament-page .tournament-banner > div:last-child b { font-size: 16px; }
+.tournament-page .eyebrow { font-size: 9.5px; }
+.tournament-page .panel__header h2 { font-size: 17px; }
+.tournament-tabs { height: 54px; margin: 12px 0; align-items: stretch; border: 1px solid var(--line); border-radius: 6px; }
+.tournament-tabs button { height: 53px; min-width: 160px; justify-content: center; font-size: 11px; }
+.tournament-tabs button:first-child { min-width: 210px; color: var(--gold-light); }
+.tournament-tabs button.is-active:first-child { border-bottom-color: var(--gold); background: linear-gradient(transparent, rgba(231,184,74,.08)); }
+
+.world-calendar { display: grid; gap: 14px; }
+
+.calendar-spotlight { --home-team: #23d7e8; --away-team: #e7b84a; position: relative; min-height: 330px; padding: 21px 24px 0; overflow: hidden; border: 1px solid rgba(231,184,74,.34); border-radius: 9px; background: radial-gradient(circle at 13% 42%, color-mix(in srgb, var(--home-team) 22%, transparent), transparent 31%), radial-gradient(circle at 87% 42%, color-mix(in srgb, var(--away-team) 22%, transparent), transparent 31%), linear-gradient(125deg,#0d2235 0%,#07121f 43%,#121c28 58%,#0b2030 100%); box-shadow: 0 24px 55px rgba(0,0,0,.28), inset 0 0 60px rgba(231,184,74,.025); }
+.calendar-spotlight::before { content: ""; position: absolute; inset: 0; opacity: .16; pointer-events: none; background-image: linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px); background-size: 42px 42px; mask-image: linear-gradient(to bottom,#000,transparent 84%); }
+.calendar-spotlight::after { content: ""; position: absolute; left: 50%; bottom: 58px; width: 380px; height: 145px; transform: translateX(-50%); border: 1px solid rgba(255,255,255,.08); border-radius: 50%; background: radial-gradient(ellipse,rgba(25,116,89,.13),transparent 67%); box-shadow: 0 -70px 95px rgba(231,184,74,.05); pointer-events: none; }
+.calendar-spotlight__atmosphere { position: absolute; top: -150px; left: 50%; width: 740px; height: 260px; transform: translateX(-50%); border: 1px solid rgba(231,184,74,.19); border-radius: 50%; box-shadow: 0 0 95px rgba(231,184,74,.12); }
+.calendar-spotlight > header { position: relative; z-index: 2; min-height: 29px; display: flex; align-items: center; justify-content: space-between; }
+.calendar-live-kicker { display: flex; align-items: center; gap: 8px; color: var(--gold-light); font-size: 10px; font-weight: 900; letter-spacing: .16em; }
+.calendar-live-kicker svg { width: 16px; filter: drop-shadow(0 0 8px var(--gold)); }
+.calendar-urgency { min-height: 25px; padding: 0 9px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; border: 1px solid rgba(127,157,179,.2); border-radius: 20px; background: rgba(8,20,32,.72); color: #9aafbf; font-size: 9px; font-style: normal; font-weight: 900; letter-spacing: .09em; white-space: nowrap; }
+.calendar-urgency svg { width: 11px; }
+.calendar-urgency--today,.calendar-urgency--pending { border-color: rgba(255,85,113,.42); color: #ff91a3; background: rgba(255,85,113,.1); }
+.calendar-urgency--imminent { border-color: rgba(231,184,74,.4); color: var(--gold-light); background: rgba(231,184,74,.09); }
+.calendar-urgency--final { border-color: rgba(54,220,138,.34); color: #7ae4aa; background: rgba(54,220,138,.08); }
+.calendar-urgency--invalid { border-color: rgba(255,156,74,.4); color: #ffbd82; }
+.calendar-spotlight__body { position: relative; z-index: 2; min-height: 191px; display: grid; grid-template-columns: minmax(250px,1fr) 190px minmax(250px,1fr); align-items: center; gap: 25px; }
+.calendar-spotlight__team { min-width: 0; display: flex; align-items: center; gap: 18px; }
+.calendar-spotlight__team--away { flex-direction: row-reverse; text-align: right; }
+.calendar-spotlight__team .flag-medallion--lg,.calendar-placeholder { width: 82px; height: 82px; flex: none; box-shadow: 0 0 0 7px rgba(255,255,255,.025),0 0 32px color-mix(in srgb,var(--home-team) 36%,transparent); }
+.calendar-spotlight__team--away .flag-medallion--lg { box-shadow: 0 0 0 7px rgba(255,255,255,.025),0 0 32px color-mix(in srgb,var(--away-team) 36%,transparent); }
+.calendar-placeholder { display: grid; place-items: center; border: 1px solid rgba(255,255,255,.13); border-radius: 50%; color: #6b8295; background: rgba(4,13,23,.7); }
+.calendar-placeholder svg { width: 31px; }
+.calendar-spotlight__team > span:last-child { min-width: 0; display: flex; flex-direction: column; }
+.calendar-spotlight__team small { color: #8ca2b2; font-size: 9px; font-weight: 800; letter-spacing: .09em; }
+.calendar-spotlight__team b { margin: 5px 0 9px; overflow: hidden; color: #f8fbfd; font-size: clamp(22px,2.1vw,31px); line-height: 1; letter-spacing: -.035em; text-overflow: ellipsis; white-space: nowrap; }
+.calendar-spotlight__event { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.calendar-spotlight__event > span { color: var(--gold-light); font-size: 9px; font-weight: 900; letter-spacing: .14em; }
+.calendar-spotlight__event > strong { margin: 8px 0 2px; color: white; font-size: 31px; line-height: 1; }
+.calendar-spotlight__event > b { color: #9fb1be; font-size: 9px; letter-spacing: .08em; }
+.calendar-spotlight__event > i { margin-top: 9px; padding: 4px 7px; border: 1px solid rgba(255,255,255,.1); border-radius: 3px; color: #6f8798; font-size: 8px; font-style: normal; }
+.calendar-form { min-height: 19px; display: flex; align-items: center; gap: 4px; }
+.calendar-spotlight__team--away .calendar-form { justify-content: flex-end; }
+.calendar-form i { width: 20px; height: 18px; display: grid; place-items: center; border-radius: 3px; color: #07120d; background: var(--green); font-size: 8px; font-style: normal; font-weight: 950; }
+.calendar-form i.is-d { color: #161004; background: var(--gold); }
+.calendar-form i.is-l { color: #fff; background: #a33a50; }
+.calendar-form small { color: #60798c !important; font-size: 8px !important; font-weight: 650 !important; letter-spacing: 0 !important; }
+.calendar-spotlight > footer { position: relative; z-index: 3; min-height: 86px; margin: 0 -24px; padding: 13px 24px; display: grid; grid-template-columns: minmax(250px,1fr) minmax(230px,.75fr) auto; align-items: center; gap: 23px; border-top: 1px solid rgba(255,255,255,.08); background: rgba(3,10,18,.61); backdrop-filter: blur(8px); }
+.calendar-spotlight > footer > div { display: flex; align-items: center; gap: 11px; }
+.calendar-spotlight > footer > div > svg { width: 21px; color: var(--cyan); }
+.calendar-spotlight > footer > div > span { display: flex; flex-direction: column; }
+.calendar-spotlight > footer small { color: #637d90; font-size: 8px; font-weight: 850; letter-spacing: .12em; }
+.calendar-spotlight > footer b { margin: 3px 0; font-size: 12px; }
+.calendar-spotlight > footer em { color: #788fa0; font-size: 9px; font-style: normal; }
+.calendar-primary-action { min-width: 178px; min-height: 44px; padding: 0 16px; display: flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid #ffe39a; border-radius: 5px; color: #171104; background: linear-gradient(135deg,#ffdd7a,#c9922e); box-shadow: 0 8px 24px rgba(231,184,74,.2); font-size: 10px; font-weight: 950; letter-spacing: .08em; }
+.calendar-primary-action svg { width: 15px; fill: currentColor; }
+.calendar-primary-action:not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 11px 30px rgba(231,184,74,.29); }
+.calendar-locked { display: flex; align-items: center; gap: 6px; color: #758b9c; font-size: 9px; font-weight: 800; }
+.calendar-locked svg { width: 14px; }
+
+.tournament-roadmap { overflow: hidden; }
+.tournament-roadmap > header,.calendar-hosts > header { min-height: 72px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
+.tournament-roadmap > header h2,.calendar-hosts > header h2 { margin: 4px 0 0; font-size: 18px; }
+.tournament-roadmap > header > button { min-height: 31px; padding: 0 11px; border: 1px solid var(--line); border-radius: 4px; color: #8198aa; background: #081625; font-size: 9px; font-weight: 850; }
+.tournament-roadmap > header > button.is-active,.tournament-roadmap > header > button:hover { border-color: rgba(35,215,232,.32); color: var(--cyan-light); background: rgba(35,215,232,.07); }
+.tournament-roadmap__track { padding: 18px; display: grid; grid-template-columns: 1.8fr 1.15fr 1fr 1fr 1fr .8fr .9fr; gap: 7px; }
+.tournament-roadmap__track > button { min-width: 0; min-height: 94px; padding: 12px; display: flex; flex-direction: column; align-items: flex-start; border: 1px solid var(--line); border-radius: 5px; color: inherit; background: rgba(4,13,23,.52); text-align: left; transition: .18s ease; }
+.tournament-roadmap__track > button:hover,.tournament-roadmap__track > button.is-active { transform: translateY(-2px); border-color: rgba(35,215,232,.35); background: rgba(35,215,232,.055); }
+.tournament-roadmap__track > button.is-complete { border-color: rgba(54,220,138,.2); }
+.tournament-roadmap__track > button > span { width: 100%; height: 3px; margin-bottom: 10px; overflow: hidden; border-radius: 3px; background: #172b3c; }
+.tournament-roadmap__track > button > span i { height: 100%; display: block; background: linear-gradient(90deg,var(--cyan),var(--gold)); box-shadow: 0 0 9px var(--cyan); }
+.tournament-roadmap__track small { color: #6e8799; font-size: 8px; font-weight: 750; }
+.tournament-roadmap__track b { margin: 6px 0 3px; overflow: hidden; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.tournament-roadmap__track em { color: #7890a1; font-size: 8px; font-style: normal; }
+
+.calendar-hosts { overflow: hidden; }
+.calendar-hosts > header > span { color: #7d93a4; font-size: 10px; }
+.calendar-hosts > div { padding: 11px; display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+.calendar-hosts article { position: relative; min-height: 86px; padding: 12px; display: grid; grid-template-columns: 28px 1fr auto; align-items: center; gap: 8px; overflow: hidden; border: 1px solid var(--line); border-radius: 5px; background: linear-gradient(135deg,rgba(15,38,58,.75),rgba(5,16,28,.72)); }
+.calendar-hosts article > svg { width: 20px; color: var(--gold); }
+.calendar-hosts article > span { min-width: 0; display: flex; flex-direction: column; }
+.calendar-hosts article span small { color: var(--cyan); font-size: 7px; font-weight: 900; letter-spacing: .12em; }
+.calendar-hosts article span b { margin: 3px 0; font-size: 13px; }
+.calendar-hosts article span em { overflow: hidden; color: #71899b; font-size: 8px; font-style: normal; text-overflow: ellipsis; white-space: nowrap; }
+.calendar-hosts article strong { color: var(--gold-light); font-size: 19px; text-align: center; }
+.calendar-hosts article strong small { display: block; color: #72899a; font-size: 6px; letter-spacing: .08em; }
+.calendar-hosts article > i { position: absolute; right: 9px; bottom: 6px; color: #536d80; font-size: 7px; font-style: normal; }
+
+.calendar-board { overflow: hidden; }
+.calendar-board__header { min-height: 91px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
+.calendar-board__header h2 { margin: 4px 0; font-size: 21px; }
+.calendar-board__header p { margin: 0; color: #748c9e; font-size: 10px; }
+.calendar-search { width: 330px; height: 43px; padding: 0 12px; display: flex; align-items: center; gap: 9px; border: 1px solid var(--line-strong); border-radius: 5px; color: #698296; background: #061321; }
+.calendar-search svg { width: 17px; }
+.calendar-search input { width: 100%; height: 100%; padding: 0; border: 0; outline: 0; background: none; font-size: 11px; }
+.calendar-filters { min-height: 56px; padding: 8px 15px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); background: rgba(4,13,22,.5); }
+.calendar-filters > div { display: flex; gap: 5px; }
+.calendar-filters > div button { min-height: 34px; padding: 0 13px; display: flex; align-items: center; gap: 5px; border: 1px solid var(--line); border-radius: 4px; color: #8298a9; background: #091724; font-size: 10px; font-weight: 800; }
+.calendar-filters > div button svg { width: 13px; color: var(--gold); }
+.calendar-filters > div button.is-active,.calendar-filters > div button:hover { border-color: rgba(35,215,232,.36); color: var(--cyan-light); background: rgba(35,215,232,.075); }
+.calendar-filters > label { min-height: 36px; padding-left: 10px; display: flex; align-items: center; gap: 7px; border: 1px solid var(--line); border-radius: 4px; color: #6f8799; background: #071421; }
+.calendar-filters > label svg { width: 14px; }
+.calendar-filters > label span { font-size: 8px; font-weight: 900; letter-spacing: .11em; }
+.calendar-filters select { width: 165px; height: 34px; padding-left: 8px; border: 0; border-left: 1px solid var(--line); font-size: 10px; }
+.calendar-days { max-height: 920px; overflow: auto; background: rgba(2,8,15,.25); }
+.calendar-day-group { display: grid; grid-template-columns: 105px 1fr; border-bottom: 1px solid var(--line); }
+.calendar-day-group > aside { padding: 20px 13px; display: flex; flex-direction: column; align-items: center; border-right: 1px solid var(--line); color: #688195; background: rgba(5,15,25,.64); text-align: center; }
+.calendar-day-group > aside > span { color: #f5f8fa; font-size: 29px; font-weight: 900; line-height: .9; }
+.calendar-day-group > aside > b { margin-top: 5px; color: var(--gold-light); font-size: 11px; }
+.calendar-day-group > aside > small { margin-top: 6px; font-size: 9px; text-transform: capitalize; }
+.calendar-day-group > aside > em { margin-top: 9px; padding: 4px 6px; border: 1px solid rgba(35,215,232,.3); border-radius: 3px; color: var(--cyan-light); background: rgba(35,215,232,.07); font-size: 7px; font-style: normal; font-weight: 900; letter-spacing: .08em; }
+.calendar-day-group.is-today > aside { background: radial-gradient(circle at 50% 15%,rgba(35,215,232,.13),transparent 60%),#061522; box-shadow: inset 3px 0 var(--cyan); }
+.calendar-day-group.has-spotlight:not(.is-today) > aside { box-shadow: inset 3px 0 var(--gold); }
+.calendar-day-group > div { min-width: 0; padding: 14px; }
+.calendar-day-group > div > header { margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+.calendar-day-group > div > header span { color: #b9c8d2; font-size: 12px; font-weight: 850; text-transform: capitalize; }
+.calendar-day-group > div > header small { color: #6b8395; font-size: 9px; }
+.calendar-match-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(430px,1fr)); gap: 9px; }
+.calendar-match-card { min-width: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 6px; background: linear-gradient(145deg,rgba(12,29,46,.93),rgba(5,16,28,.91)); transition: .18s ease; }
+.calendar-match-card:hover { border-color: rgba(127,164,190,.28); transform: translateY(-1px); box-shadow: 0 9px 25px rgba(0,0,0,.15); }
+.calendar-match-card.is-user { border-color: rgba(231,184,74,.36); box-shadow: inset 0 2px rgba(231,184,74,.38),0 8px 24px rgba(231,184,74,.045); }
+.calendar-match-card--today { border-color: rgba(255,85,113,.38); }
+.calendar-match-card > header { min-height: 36px; padding: 6px 10px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
+.calendar-match-card > header > span { color: #8299aa; font-size: 8.5px; font-weight: 850; letter-spacing: .08em; }
+.calendar-match-card > header .calendar-urgency { min-height: 21px; font-size: 7px; }
+.calendar-match-card__teams { min-height: 91px; padding: 10px; display: grid; grid-template-columns: minmax(125px,1fr) 84px minmax(125px,1fr); align-items: center; gap: 8px; }
+.calendar-match-card__teams > div { min-width: 0; display: flex; align-items: center; gap: 9px; }
+.calendar-match-card__teams > div:last-child { flex-direction: row-reverse; text-align: right; }
+.calendar-match-card__teams .flag-medallion,.calendar-mini-placeholder { width: 38px; height: 38px; flex: none; }
+.calendar-mini-placeholder { display: grid; place-items: center; border: 1px solid var(--line); border-radius: 50%; color: #60788b; background: #0a1b2a; }
+.calendar-mini-placeholder svg { width: 17px; }
+.calendar-match-card__teams > div > span:last-child { min-width: 0; display: flex; flex-direction: column; }
+.calendar-match-card__teams > div b { overflow: hidden; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.calendar-match-card__teams > div small { margin: 3px 0 5px; overflow: hidden; color: #6f8799; font-size: 7px; text-overflow: ellipsis; white-space: nowrap; }
+.calendar-match-card__teams > div:last-child .calendar-form { justify-content: flex-end; }
+.calendar-match-card__teams .calendar-form i { width: 17px; height: 15px; font-size: 7px; }
+.calendar-match-card__teams > strong { color: #f5f9fb; font-size: 17px; text-align: center; }
+.calendar-match-card__teams > strong > b { display: block; font-size: 18px; }
+.calendar-match-card__teams > strong > small { color: #698195; font-size: 6px; letter-spacing: .08em; }
+.calendar-match-card > footer { min-height: 48px; padding: 7px 10px; display: flex; align-items: center; border-top: 1px solid var(--line); background: rgba(3,10,18,.42); }
+.calendar-match-card > footer > span { min-width: 0; flex: 1; display: grid; grid-template-columns: 18px 1fr; align-items: center; }
+.calendar-match-card > footer > span svg { grid-row: 1/3; width: 14px; color: var(--gold); }
+.calendar-match-card > footer > span b { font-size: 9px; }
+.calendar-match-card > footer > span small { overflow: hidden; color: #667f91; font-size: 7px; text-overflow: ellipsis; white-space: nowrap; }
+.calendar-match-card > footer button,.calendar-match-card > footer > em { min-width: 91px; min-height: 30px; padding: 0 9px; display: flex; align-items: center; justify-content: center; gap: 5px; border: 1px solid rgba(35,215,232,.24); border-radius: 4px; color: var(--cyan-light); background: rgba(35,215,232,.06); font-size: 7.5px; font-style: normal; font-weight: 900; }
+.calendar-match-card > footer button svg,.calendar-match-card > footer > em svg { width: 11px; }
+.calendar-match-card > footer button:not(:disabled):hover { border-color: rgba(35,215,232,.5); background: rgba(35,215,232,.12); }
+
+/* Readability pass for the other tournament tabs. */
+.tournament-page .group-status { font-size: 8px; }
+.tournament-page .group-card th { height: 30px; font-size: 8px; }
+.tournament-page .group-card td { height: 42px; font-size: 10px; }
+.tournament-page .group-card footer { height: 35px; font-size: 8px; }
+.tournament-page .bracket > header > span { font-size: 10px; }
+.tournament-page .bracket-match > span { min-height: 34px; }
+.tournament-page .bracket-match b { font-size: 9px; }
+.tournament-page .bracket-match > small { font-size: 7px; }
+.tournament-page .bracket-match > button,.tournament-page .bronze-match > button { min-height: 28px; font-size: 8px; }
+.tournament-page .stats-summary > p { font-size: 9px; }
+.tournament-page .leader-list strong { font-size: 11px; }
+.tournament-page .leader-list small { font-size: 8px; }
+.tournament-page .empty-copy { font-size: 10px; }
+.tournament-page .ceremony p { font-size: 11px; }
+
+@media (max-width: 1360px) {
+  .calendar-spotlight__body { grid-template-columns: minmax(220px,1fr) 150px minmax(220px,1fr); gap: 14px; }
+  .calendar-spotlight__team .flag-medallion--lg,.calendar-placeholder { width: 68px; height: 68px; }
+  .calendar-spotlight__team b { font-size: 22px; }
+  .calendar-spotlight > footer { grid-template-columns: 1fr 1fr auto; gap: 12px; }
+  .tournament-roadmap__track { overflow-x: auto; grid-template-columns: 190px repeat(6,145px); }
+  .calendar-match-grid { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .calendar-primary-action,.tournament-roadmap__track > button,.calendar-match-card { transition: none; }
+  .calendar-primary-action:hover,.tournament-roadmap__track > button:hover,.calendar-match-card:hover { transform: none; }
+}

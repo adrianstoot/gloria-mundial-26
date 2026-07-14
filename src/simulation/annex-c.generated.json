@@ -1,0 +1,6437 @@
+{
+  "ABCDEFGH": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "D",
+      "L": "E"
+    },
+    "option": 495
+  },
+  "ABCDEFGI": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "E",
+      "L": "I"
+    },
+    "option": 494
+  },
+  "ABCDEFGJ": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "E",
+      "L": "J"
+    },
+    "option": 493
+  },
+  "ABCDEFGK": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "E",
+      "L": "K"
+    },
+    "option": 492
+  },
+  "ABCDEFGL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "E"
+    },
+    "option": 491
+  },
+  "ABCDEFHI": {
+    "allocation": {
+      "A": "H",
+      "B": "E",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "D",
+      "L": "I"
+    },
+    "option": 490
+  },
+  "ABCDEFHJ": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "D",
+      "L": "E"
+    },
+    "option": 489
+  },
+  "ABCDEFHK": {
+    "allocation": {
+      "A": "H",
+      "B": "E",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "D",
+      "L": "K"
+    },
+    "option": 488
+  },
+  "ABCDEFHL": {
+    "allocation": {
+      "A": "H",
+      "B": "F",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "E"
+    },
+    "option": 487
+  },
+  "ABCDEFIJ": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "E",
+      "L": "I"
+    },
+    "option": 486
+  },
+  "ABCDEFIK": {
+    "allocation": {
+      "A": "C",
+      "B": "E",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 485
+  },
+  "ABCDEFIL": {
+    "allocation": {
+      "A": "C",
+      "B": "E",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 484
+  },
+  "ABCDEFJK": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "E",
+      "L": "K"
+    },
+    "option": 483
+  },
+  "ABCDEFJL": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "E"
+    },
+    "option": 482
+  },
+  "ABCDEFKL": {
+    "allocation": {
+      "A": "C",
+      "B": "E",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 481
+  },
+  "ABCDEGHI": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "E",
+      "L": "I"
+    },
+    "option": 480
+  },
+  "ABCDEGHJ": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "E",
+      "L": "J"
+    },
+    "option": 479
+  },
+  "ABCDEGHK": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "E",
+      "L": "K"
+    },
+    "option": 478
+  },
+  "ABCDEGHL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "E"
+    },
+    "option": 477
+  },
+  "ABCDEGIJ": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "I",
+      "L": "J"
+    },
+    "option": 476
+  },
+  "ABCDEGIK": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 475
+  },
+  "ABCDEGIL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 474
+  },
+  "ABCDEGJK": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "J",
+      "L": "K"
+    },
+    "option": 473
+  },
+  "ABCDEGJL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "J"
+    },
+    "option": 472
+  },
+  "ABCDEGKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 471
+  },
+  "ABCDEHIJ": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "E",
+      "L": "I"
+    },
+    "option": 470
+  },
+  "ABCDEHIK": {
+    "allocation": {
+      "A": "H",
+      "B": "E",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 469
+  },
+  "ABCDEHIL": {
+    "allocation": {
+      "A": "H",
+      "B": "E",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 468
+  },
+  "ABCDEHJK": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "E",
+      "L": "K"
+    },
+    "option": 467
+  },
+  "ABCDEHJL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "E"
+    },
+    "option": 466
+  },
+  "ABCDEHKL": {
+    "allocation": {
+      "A": "H",
+      "B": "E",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 465
+  },
+  "ABCDEIJK": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 464
+  },
+  "ABCDEIJL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 463
+  },
+  "ABCDEIKL": {
+    "allocation": {
+      "A": "E",
+      "B": "I",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 462
+  },
+  "ABCDEJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 461
+  },
+  "ABCDFGHI": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "D",
+      "L": "I"
+    },
+    "option": 460
+  },
+  "ABCDFGHJ": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "D",
+      "L": "J"
+    },
+    "option": 459
+  },
+  "ABCDFGHK": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "D",
+      "L": "K"
+    },
+    "option": 458
+  },
+  "ABCDFGHL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "H"
+    },
+    "option": 457
+  },
+  "ABCDFGIJ": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "I",
+      "L": "J"
+    },
+    "option": 456
+  },
+  "ABCDFGIK": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 455
+  },
+  "ABCDFGIL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 454
+  },
+  "ABCDFGJK": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "J",
+      "L": "K"
+    },
+    "option": 453
+  },
+  "ABCDFGJL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "J"
+    },
+    "option": 452
+  },
+  "ABCDFGKL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 451
+  },
+  "ABCDFHIJ": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "D",
+      "L": "I"
+    },
+    "option": 450
+  },
+  "ABCDFHIK": {
+    "allocation": {
+      "A": "H",
+      "B": "F",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 449
+  },
+  "ABCDFHIL": {
+    "allocation": {
+      "A": "H",
+      "B": "F",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 448
+  },
+  "ABCDFHJK": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "D",
+      "L": "K"
+    },
+    "option": 447
+  },
+  "ABCDFHJL": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "H"
+    },
+    "option": 446
+  },
+  "ABCDFHKL": {
+    "allocation": {
+      "A": "H",
+      "B": "F",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 445
+  },
+  "ABCDFIJK": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 444
+  },
+  "ABCDFIJL": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 443
+  },
+  "ABCDFIKL": {
+    "allocation": {
+      "A": "C",
+      "B": "I",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 442
+  },
+  "ABCDFJKL": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 441
+  },
+  "ABCDGHIJ": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "I",
+      "L": "J"
+    },
+    "option": 440
+  },
+  "ABCDGHIK": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 439
+  },
+  "ABCDGHIL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 438
+  },
+  "ABCDGHJK": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "J",
+      "L": "K"
+    },
+    "option": 437
+  },
+  "ABCDGHJL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "J"
+    },
+    "option": 436
+  },
+  "ABCDGHKL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 435
+  },
+  "ABCDGIJK": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "G",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 434
+  },
+  "ABCDGIJL": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "G",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 433
+  },
+  "ABCDGIKL": {
+    "allocation": {
+      "A": "I",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 432
+  },
+  "ABCDGJKL": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 431
+  },
+  "ABCDHIJK": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 430
+  },
+  "ABCDHIJL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 429
+  },
+  "ABCDHIKL": {
+    "allocation": {
+      "A": "H",
+      "B": "I",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 428
+  },
+  "ABCDHJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 427
+  },
+  "ABCDIJKL": {
+    "allocation": {
+      "A": "I",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 426
+  },
+  "ABCEFGHI": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "E",
+      "L": "I"
+    },
+    "option": 425
+  },
+  "ABCEFGHJ": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "E",
+      "L": "J"
+    },
+    "option": 424
+  },
+  "ABCEFGHK": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "E",
+      "L": "K"
+    },
+    "option": 423
+  },
+  "ABCEFGHL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "E"
+    },
+    "option": 422
+  },
+  "ABCEFGIJ": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "I",
+      "L": "J"
+    },
+    "option": 421
+  },
+  "ABCEFGIK": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 420
+  },
+  "ABCEFGIL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 419
+  },
+  "ABCEFGJK": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "J",
+      "L": "K"
+    },
+    "option": 418
+  },
+  "ABCEFGJL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "J"
+    },
+    "option": 417
+  },
+  "ABCEFGKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 416
+  },
+  "ABCEFHIJ": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "E",
+      "L": "I"
+    },
+    "option": 415
+  },
+  "ABCEFHIK": {
+    "allocation": {
+      "A": "H",
+      "B": "E",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 414
+  },
+  "ABCEFHIL": {
+    "allocation": {
+      "A": "H",
+      "B": "E",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 413
+  },
+  "ABCEFHJK": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "E",
+      "L": "K"
+    },
+    "option": 412
+  },
+  "ABCEFHJL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "E"
+    },
+    "option": 411
+  },
+  "ABCEFHKL": {
+    "allocation": {
+      "A": "H",
+      "B": "E",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 410
+  },
+  "ABCEFIJK": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 409
+  },
+  "ABCEFIJL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 408
+  },
+  "ABCEFIKL": {
+    "allocation": {
+      "A": "E",
+      "B": "I",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 407
+  },
+  "ABCEFJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 406
+  },
+  "ABCEGHIJ": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "G",
+      "K": "E",
+      "L": "I"
+    },
+    "option": 405
+  },
+  "ABCEGHIK": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "H",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 404
+  },
+  "ABCEGHIL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "H",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 403
+  },
+  "ABCEGHJK": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "G",
+      "K": "E",
+      "L": "K"
+    },
+    "option": 402
+  },
+  "ABCEGHJL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "G",
+      "K": "L",
+      "L": "E"
+    },
+    "option": 401
+  },
+  "ABCEGHKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "H",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 400
+  },
+  "ABCEGIJK": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "G",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 399
+  },
+  "ABCEGIJL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "G",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 398
+  },
+  "ABCEGIKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "A",
+      "G": "I",
+      "I": "C",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 397
+  },
+  "ABCEGJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 396
+  },
+  "ABCEHIJK": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "H",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 395
+  },
+  "ABCEHIJL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "H",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 394
+  },
+  "ABCEHIKL": {
+    "allocation": {
+      "A": "E",
+      "B": "I",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "H",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 393
+  },
+  "ABCEHJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "H",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 392
+  },
+  "ABCEIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "A",
+      "G": "I",
+      "I": "C",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 391
+  },
+  "ABCFGHIJ": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "I",
+      "L": "J"
+    },
+    "option": 390
+  },
+  "ABCFGHIK": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 389
+  },
+  "ABCFGHIL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 388
+  },
+  "ABCFGHJK": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "J",
+      "L": "K"
+    },
+    "option": 387
+  },
+  "ABCFGHJL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "J"
+    },
+    "option": 386
+  },
+  "ABCFGHKL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 385
+  },
+  "ABCFGIJK": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "B",
+      "E": "F",
+      "G": "A",
+      "I": "G",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 384
+  },
+  "ABCFGIJL": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "B",
+      "E": "F",
+      "G": "A",
+      "I": "G",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 383
+  },
+  "ABCFGIKL": {
+    "allocation": {
+      "A": "I",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 382
+  },
+  "ABCFGJKL": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "B",
+      "E": "F",
+      "G": "A",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 381
+  },
+  "ABCFHIJK": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 380
+  },
+  "ABCFHIJL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 379
+  },
+  "ABCFHIKL": {
+    "allocation": {
+      "A": "H",
+      "B": "I",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 378
+  },
+  "ABCFHJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 377
+  },
+  "ABCFIJKL": {
+    "allocation": {
+      "A": "I",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 376
+  },
+  "ABCGHIJK": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "G",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 375
+  },
+  "ABCGHIJL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "G",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 374
+  },
+  "ABCGHIKL": {
+    "allocation": {
+      "A": "I",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "H",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 373
+  },
+  "ABCGHJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 372
+  },
+  "ABCGIJKL": {
+    "allocation": {
+      "A": "I",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 371
+  },
+  "ABCHIJKL": {
+    "allocation": {
+      "A": "I",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "A",
+      "I": "H",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 370
+  },
+  "ABDEFGHI": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "E",
+      "L": "I"
+    },
+    "option": 369
+  },
+  "ABDEFGHJ": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "E",
+      "L": "J"
+    },
+    "option": 368
+  },
+  "ABDEFGHK": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "E",
+      "L": "K"
+    },
+    "option": 367
+  },
+  "ABDEFGHL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "E"
+    },
+    "option": 366
+  },
+  "ABDEFGIJ": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "I",
+      "L": "J"
+    },
+    "option": 365
+  },
+  "ABDEFGIK": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 364
+  },
+  "ABDEFGIL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 363
+  },
+  "ABDEFGJK": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "J",
+      "L": "K"
+    },
+    "option": 362
+  },
+  "ABDEFGJL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "J"
+    },
+    "option": 361
+  },
+  "ABDEFGKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 360
+  },
+  "ABDEFHIJ": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "E",
+      "L": "I"
+    },
+    "option": 359
+  },
+  "ABDEFHIK": {
+    "allocation": {
+      "A": "H",
+      "B": "E",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 358
+  },
+  "ABDEFHIL": {
+    "allocation": {
+      "A": "H",
+      "B": "E",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 357
+  },
+  "ABDEFHJK": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "E",
+      "L": "K"
+    },
+    "option": 356
+  },
+  "ABDEFHJL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "E"
+    },
+    "option": 355
+  },
+  "ABDEFHKL": {
+    "allocation": {
+      "A": "H",
+      "B": "E",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 354
+  },
+  "ABDEFIJK": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 353
+  },
+  "ABDEFIJL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 352
+  },
+  "ABDEFIKL": {
+    "allocation": {
+      "A": "E",
+      "B": "I",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 351
+  },
+  "ABDEFJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 350
+  },
+  "ABDEGHIJ": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "G",
+      "K": "E",
+      "L": "I"
+    },
+    "option": 349
+  },
+  "ABDEGHIK": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "H",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 348
+  },
+  "ABDEGHIL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "H",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 347
+  },
+  "ABDEGHJK": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "G",
+      "K": "E",
+      "L": "K"
+    },
+    "option": 346
+  },
+  "ABDEGHJL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "G",
+      "K": "L",
+      "L": "E"
+    },
+    "option": 345
+  },
+  "ABDEGHKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "H",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 344
+  },
+  "ABDEGIJK": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "G",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 343
+  },
+  "ABDEGIJL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "G",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 342
+  },
+  "ABDEGIKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "A",
+      "G": "I",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 341
+  },
+  "ABDEGJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 340
+  },
+  "ABDEHIJK": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "H",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 339
+  },
+  "ABDEHIJL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "H",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 338
+  },
+  "ABDEHIKL": {
+    "allocation": {
+      "A": "E",
+      "B": "I",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "H",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 337
+  },
+  "ABDEHJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "H",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 336
+  },
+  "ABDEIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "A",
+      "G": "I",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 335
+  },
+  "ABDFGHIJ": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "I",
+      "L": "J"
+    },
+    "option": 334
+  },
+  "ABDFGHIK": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 333
+  },
+  "ABDFGHIL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 332
+  },
+  "ABDFGHJK": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "J",
+      "L": "K"
+    },
+    "option": 331
+  },
+  "ABDFGHJL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "J"
+    },
+    "option": 330
+  },
+  "ABDFGHKL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 329
+  },
+  "ABDFGIJK": {
+    "allocation": {
+      "A": "F",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "G",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 328
+  },
+  "ABDFGIJL": {
+    "allocation": {
+      "A": "F",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "G",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 327
+  },
+  "ABDFGIKL": {
+    "allocation": {
+      "A": "I",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 326
+  },
+  "ABDFGJKL": {
+    "allocation": {
+      "A": "F",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 325
+  },
+  "ABDFHIJK": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 324
+  },
+  "ABDFHIJL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 323
+  },
+  "ABDFHIKL": {
+    "allocation": {
+      "A": "H",
+      "B": "I",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 322
+  },
+  "ABDFHJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 321
+  },
+  "ABDFIJKL": {
+    "allocation": {
+      "A": "I",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 320
+  },
+  "ABDGHIJK": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "G",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 319
+  },
+  "ABDGHIJL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "G",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 318
+  },
+  "ABDGHIKL": {
+    "allocation": {
+      "A": "I",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "H",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 317
+  },
+  "ABDGHJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 316
+  },
+  "ABDGIJKL": {
+    "allocation": {
+      "A": "I",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 315
+  },
+  "ABDHIJKL": {
+    "allocation": {
+      "A": "I",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "A",
+      "I": "H",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 314
+  },
+  "ABEFGHIJ": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "F",
+      "G": "A",
+      "I": "G",
+      "K": "E",
+      "L": "I"
+    },
+    "option": 313
+  },
+  "ABEFGHIK": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "F",
+      "G": "A",
+      "I": "H",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 312
+  },
+  "ABEFGHIL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "F",
+      "G": "A",
+      "I": "H",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 311
+  },
+  "ABEFGHJK": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "F",
+      "G": "A",
+      "I": "G",
+      "K": "E",
+      "L": "K"
+    },
+    "option": 310
+  },
+  "ABEFGHJL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "F",
+      "G": "A",
+      "I": "G",
+      "K": "L",
+      "L": "E"
+    },
+    "option": 309
+  },
+  "ABEFGHKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "F",
+      "G": "A",
+      "I": "H",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 308
+  },
+  "ABEFGIJK": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "F",
+      "G": "A",
+      "I": "G",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 307
+  },
+  "ABEFGIJL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "F",
+      "G": "A",
+      "I": "G",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 306
+  },
+  "ABEFGIKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "A",
+      "G": "I",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 305
+  },
+  "ABEFGJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "F",
+      "G": "A",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 304
+  },
+  "ABEFHIJK": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "F",
+      "G": "A",
+      "I": "H",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 303
+  },
+  "ABEFHIJL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "F",
+      "G": "A",
+      "I": "H",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 302
+  },
+  "ABEFHIKL": {
+    "allocation": {
+      "A": "E",
+      "B": "I",
+      "D": "B",
+      "E": "F",
+      "G": "A",
+      "I": "H",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 301
+  },
+  "ABEFHJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "F",
+      "G": "A",
+      "I": "H",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 300
+  },
+  "ABEFIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "A",
+      "G": "I",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 299
+  },
+  "ABEGHIJK": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "A",
+      "G": "H",
+      "I": "G",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 298
+  },
+  "ABEGHIJL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "A",
+      "G": "H",
+      "I": "G",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 297
+  },
+  "ABEGHIKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "A",
+      "G": "I",
+      "I": "H",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 296
+  },
+  "ABEGHJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "A",
+      "G": "H",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 295
+  },
+  "ABEGIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "A",
+      "G": "I",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 294
+  },
+  "ABEHIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "A",
+      "G": "I",
+      "I": "H",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 293
+  },
+  "ABFGHIJK": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "F",
+      "G": "A",
+      "I": "G",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 292
+  },
+  "ABFGHIJL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "F",
+      "G": "A",
+      "I": "G",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 291
+  },
+  "ABFGHIKL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "A",
+      "G": "I",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 290
+  },
+  "ABFGHJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "F",
+      "G": "A",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 289
+  },
+  "ABFGIJKL": {
+    "allocation": {
+      "A": "I",
+      "B": "J",
+      "D": "B",
+      "E": "F",
+      "G": "A",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 288
+  },
+  "ABFHIJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "A",
+      "G": "I",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 287
+  },
+  "ABGHIJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "A",
+      "G": "I",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 286
+  },
+  "ACDEFGHI": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "E",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "D",
+      "L": "I"
+    },
+    "option": 285
+  },
+  "ACDEFGHJ": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "D",
+      "L": "E"
+    },
+    "option": 284
+  },
+  "ACDEFGHK": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "E",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "D",
+      "L": "K"
+    },
+    "option": 283
+  },
+  "ACDEFGHL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "F",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "E"
+    },
+    "option": 282
+  },
+  "ACDEFGIJ": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "J",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "E",
+      "L": "I"
+    },
+    "option": 281
+  },
+  "ACDEFGIK": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "E",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 280
+  },
+  "ACDEFGIL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "E",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 279
+  },
+  "ACDEFGJK": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "J",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "E",
+      "L": "K"
+    },
+    "option": 278
+  },
+  "ACDEFGJL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "J",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "E"
+    },
+    "option": 277
+  },
+  "ACDEFGKL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "E",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 276
+  },
+  "ACDEFHIJ": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "E",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "D",
+      "L": "I"
+    },
+    "option": 275
+  },
+  "ACDEFHIK": {
+    "allocation": {
+      "A": "H",
+      "B": "E",
+      "D": "F",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 274
+  },
+  "ACDEFHIL": {
+    "allocation": {
+      "A": "H",
+      "B": "E",
+      "D": "F",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 273
+  },
+  "ACDEFHJK": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "E",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "D",
+      "L": "K"
+    },
+    "option": 272
+  },
+  "ACDEFHJL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "F",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "E"
+    },
+    "option": 271
+  },
+  "ACDEFHKL": {
+    "allocation": {
+      "A": "H",
+      "B": "E",
+      "D": "F",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 270
+  },
+  "ACDEFIJK": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "E",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 269
+  },
+  "ACDEFIJL": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "E",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 268
+  },
+  "ACDEFIKL": {
+    "allocation": {
+      "A": "C",
+      "B": "E",
+      "D": "I",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 267
+  },
+  "ACDEFJKL": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "E",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 266
+  },
+  "ACDEGHIJ": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "E",
+      "L": "I"
+    },
+    "option": 265
+  },
+  "ACDEGHIK": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "E",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 264
+  },
+  "ACDEGHIL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "E",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 263
+  },
+  "ACDEGHJK": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "E",
+      "L": "K"
+    },
+    "option": 262
+  },
+  "ACDEGHJL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "E"
+    },
+    "option": 261
+  },
+  "ACDEGHKL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "E",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 260
+  },
+  "ACDEGIJK": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 259
+  },
+  "ACDEGIJL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 258
+  },
+  "ACDEGIKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "I",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 257
+  },
+  "ACDEGJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 256
+  },
+  "ACDEHIJK": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "E",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 255
+  },
+  "ACDEHIJL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "E",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 254
+  },
+  "ACDEHIKL": {
+    "allocation": {
+      "A": "H",
+      "B": "E",
+      "D": "I",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 253
+  },
+  "ACDEHJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "E",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 252
+  },
+  "ACDEIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "I",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 251
+  },
+  "ACDFGHIJ": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "D",
+      "L": "I"
+    },
+    "option": 250
+  },
+  "ACDFGHIK": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "F",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 249
+  },
+  "ACDFGHIL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "F",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 248
+  },
+  "ACDFGHJK": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "D",
+      "L": "K"
+    },
+    "option": 247
+  },
+  "ACDFGHJL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "J",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "H"
+    },
+    "option": 246
+  },
+  "ACDFGHKL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "F",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 245
+  },
+  "ACDFGIJK": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "J",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 244
+  },
+  "ACDFGIJL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "J",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 243
+  },
+  "ACDFGIKL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "I",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 242
+  },
+  "ACDFGJKL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "J",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 241
+  },
+  "ACDFHIJK": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "F",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 240
+  },
+  "ACDFHIJL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "F",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 239
+  },
+  "ACDFHIKL": {
+    "allocation": {
+      "A": "H",
+      "B": "F",
+      "D": "I",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 238
+  },
+  "ACDFHJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "F",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 237
+  },
+  "ACDFIJKL": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "I",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 236
+  },
+  "ACDGHIJK": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 235
+  },
+  "ACDGHIJL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 234
+  },
+  "ACDGHIKL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "I",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 233
+  },
+  "ACDGHJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 232
+  },
+  "ACDGIJKL": {
+    "allocation": {
+      "A": "I",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 231
+  },
+  "ACDHIJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "I",
+      "E": "C",
+      "G": "A",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 230
+  },
+  "ACEFGHIJ": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "E",
+      "L": "I"
+    },
+    "option": 229
+  },
+  "ACEFGHIK": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "E",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 228
+  },
+  "ACEFGHIL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "E",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 227
+  },
+  "ACEFGHJK": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "E",
+      "L": "K"
+    },
+    "option": 226
+  },
+  "ACEFGHJL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "E"
+    },
+    "option": 225
+  },
+  "ACEFGHKL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "E",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 224
+  },
+  "ACEFGIJK": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 223
+  },
+  "ACEFGIJL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 222
+  },
+  "ACEFGIKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "I",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 221
+  },
+  "ACEFGJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 220
+  },
+  "ACEFHIJK": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "E",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 219
+  },
+  "ACEFHIJL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "E",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 218
+  },
+  "ACEFHIKL": {
+    "allocation": {
+      "A": "H",
+      "B": "E",
+      "D": "I",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 217
+  },
+  "ACEFHJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "E",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 216
+  },
+  "ACEFIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "I",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 215
+  },
+  "ACEGHIJK": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "A",
+      "I": "H",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 214
+  },
+  "ACEGHIJL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "A",
+      "I": "H",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 213
+  },
+  "ACEGHIKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "I",
+      "E": "C",
+      "G": "A",
+      "I": "H",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 212
+  },
+  "ACEGHJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "A",
+      "I": "H",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 211
+  },
+  "ACEGIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "I",
+      "E": "C",
+      "G": "A",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 210
+  },
+  "ACEHIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "I",
+      "E": "C",
+      "G": "A",
+      "I": "H",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 209
+  },
+  "ACFGHIJK": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 208
+  },
+  "ACFGHIJL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 207
+  },
+  "ACFGHIKL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "I",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 206
+  },
+  "ACFGHJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 205
+  },
+  "ACFGIJKL": {
+    "allocation": {
+      "A": "I",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 204
+  },
+  "ACFHIJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "I",
+      "E": "C",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 203
+  },
+  "ACGHIJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "I",
+      "E": "C",
+      "G": "A",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 202
+  },
+  "ADEFGHIJ": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "J",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "E",
+      "L": "I"
+    },
+    "option": 201
+  },
+  "ADEFGHIK": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "E",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 200
+  },
+  "ADEFGHIL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "E",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 199
+  },
+  "ADEFGHJK": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "J",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "E",
+      "L": "K"
+    },
+    "option": 198
+  },
+  "ADEFGHJL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "J",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "E"
+    },
+    "option": 197
+  },
+  "ADEFGHKL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "E",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 196
+  },
+  "ADEFGIJK": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "J",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 195
+  },
+  "ADEFGIJL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "J",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 194
+  },
+  "ADEFGIKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "I",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 193
+  },
+  "ADEFGJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "J",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 192
+  },
+  "ADEFHIJK": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "E",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 191
+  },
+  "ADEFHIJL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "E",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 190
+  },
+  "ADEFHIKL": {
+    "allocation": {
+      "A": "H",
+      "B": "E",
+      "D": "I",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 189
+  },
+  "ADEFHJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "E",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 188
+  },
+  "ADEFIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "I",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 187
+  },
+  "ADEGHIJK": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "J",
+      "E": "D",
+      "G": "A",
+      "I": "H",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 186
+  },
+  "ADEGHIJL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "J",
+      "E": "D",
+      "G": "A",
+      "I": "H",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 185
+  },
+  "ADEGHIKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "I",
+      "E": "D",
+      "G": "A",
+      "I": "H",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 184
+  },
+  "ADEGHJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "J",
+      "E": "D",
+      "G": "A",
+      "I": "H",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 183
+  },
+  "ADEGIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "I",
+      "E": "D",
+      "G": "A",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 182
+  },
+  "ADEHIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "I",
+      "E": "D",
+      "G": "A",
+      "I": "H",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 181
+  },
+  "ADFGHIJK": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "J",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 180
+  },
+  "ADFGHIJL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "J",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 179
+  },
+  "ADFGHIKL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "I",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 178
+  },
+  "ADFGHJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "J",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 177
+  },
+  "ADFGIJKL": {
+    "allocation": {
+      "A": "I",
+      "B": "G",
+      "D": "J",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 176
+  },
+  "ADFHIJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "I",
+      "E": "D",
+      "G": "A",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 175
+  },
+  "ADGHIJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "I",
+      "E": "D",
+      "G": "A",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 174
+  },
+  "AEFGHIJK": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "J",
+      "E": "F",
+      "G": "A",
+      "I": "H",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 173
+  },
+  "AEFGHIJL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "J",
+      "E": "F",
+      "G": "A",
+      "I": "H",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 172
+  },
+  "AEFGHIKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "I",
+      "E": "F",
+      "G": "A",
+      "I": "H",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 171
+  },
+  "AEFGHJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "J",
+      "E": "F",
+      "G": "A",
+      "I": "H",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 170
+  },
+  "AEFGIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "I",
+      "E": "F",
+      "G": "A",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 169
+  },
+  "AEFHIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "I",
+      "E": "F",
+      "G": "A",
+      "I": "H",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 168
+  },
+  "AEGHIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "I",
+      "E": "A",
+      "G": "H",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 167
+  },
+  "AFGHIJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "I",
+      "E": "F",
+      "G": "A",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 166
+  },
+  "BCDEFGHI": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "E",
+      "L": "I"
+    },
+    "option": 165
+  },
+  "BCDEFGHJ": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "J",
+      "I": "F",
+      "K": "D",
+      "L": "E"
+    },
+    "option": 164
+  },
+  "BCDEFGHK": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "E",
+      "L": "K"
+    },
+    "option": 163
+  },
+  "BCDEFGHL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "E"
+    },
+    "option": 162
+  },
+  "BCDEFGIJ": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "J",
+      "I": "F",
+      "K": "E",
+      "L": "I"
+    },
+    "option": 161
+  },
+  "BCDEFGIK": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "E",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 160
+  },
+  "BCDEFGIL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "E",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 159
+  },
+  "BCDEFGJK": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "J",
+      "I": "F",
+      "K": "E",
+      "L": "K"
+    },
+    "option": 158
+  },
+  "BCDEFGJL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "J",
+      "I": "F",
+      "K": "L",
+      "L": "E"
+    },
+    "option": 157
+  },
+  "BCDEFGKL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "E",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 156
+  },
+  "BCDEFHIJ": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "E",
+      "L": "I"
+    },
+    "option": 155
+  },
+  "BCDEFHIK": {
+    "allocation": {
+      "A": "C",
+      "B": "E",
+      "D": "B",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 154
+  },
+  "BCDEFHIL": {
+    "allocation": {
+      "A": "C",
+      "B": "E",
+      "D": "B",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 153
+  },
+  "BCDEFHJK": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "E",
+      "L": "K"
+    },
+    "option": 152
+  },
+  "BCDEFHJL": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "E"
+    },
+    "option": 151
+  },
+  "BCDEFHKL": {
+    "allocation": {
+      "A": "C",
+      "B": "E",
+      "D": "B",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 150
+  },
+  "BCDEFIJK": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "E",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 149
+  },
+  "BCDEFIJL": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "E",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 148
+  },
+  "BCDEFIKL": {
+    "allocation": {
+      "A": "C",
+      "B": "E",
+      "D": "B",
+      "E": "D",
+      "G": "I",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 147
+  },
+  "BCDEFJKL": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "E",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 146
+  },
+  "BCDEGHIJ": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "J",
+      "I": "D",
+      "K": "E",
+      "L": "I"
+    },
+    "option": 145
+  },
+  "BCDEGHIK": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "H",
+      "I": "D",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 144
+  },
+  "BCDEGHIL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "H",
+      "I": "D",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 143
+  },
+  "BCDEGHJK": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "J",
+      "I": "D",
+      "K": "E",
+      "L": "K"
+    },
+    "option": 142
+  },
+  "BCDEGHJL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "J",
+      "I": "D",
+      "K": "L",
+      "L": "E"
+    },
+    "option": 141
+  },
+  "BCDEGHKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "H",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 140
+  },
+  "BCDEGIJK": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "J",
+      "I": "D",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 139
+  },
+  "BCDEGIJL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "J",
+      "I": "D",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 138
+  },
+  "BCDEGIKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "I",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 137
+  },
+  "BCDEGJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "J",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 136
+  },
+  "BCDEHIJK": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "H",
+      "I": "D",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 135
+  },
+  "BCDEHIJL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "H",
+      "I": "D",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 134
+  },
+  "BCDEHIKL": {
+    "allocation": {
+      "A": "E",
+      "B": "I",
+      "D": "B",
+      "E": "C",
+      "G": "H",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 133
+  },
+  "BCDEHJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "H",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 132
+  },
+  "BCDEIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "I",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 131
+  },
+  "BCDFGHIJ": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "J",
+      "I": "F",
+      "K": "D",
+      "L": "I"
+    },
+    "option": 130
+  },
+  "BCDFGHIK": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 129
+  },
+  "BCDFGHIL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 128
+  },
+  "BCDFGHJK": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "J",
+      "I": "F",
+      "K": "D",
+      "L": "K"
+    },
+    "option": 127
+  },
+  "BCDFGHJL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "J"
+    },
+    "option": 126
+  },
+  "BCDFGHKL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 125
+  },
+  "BCDFGIJK": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "J",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 124
+  },
+  "BCDFGIJL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "J",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 123
+  },
+  "BCDFGIKL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "I",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 122
+  },
+  "BCDFGJKL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "J",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 121
+  },
+  "BCDFHIJK": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 120
+  },
+  "BCDFHIJL": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 119
+  },
+  "BCDFHIKL": {
+    "allocation": {
+      "A": "C",
+      "B": "I",
+      "D": "B",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 118
+  },
+  "BCDFHJKL": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 117
+  },
+  "BCDFIJKL": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "I",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 116
+  },
+  "BCDGHIJK": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "J",
+      "I": "D",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 115
+  },
+  "BCDGHIJL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "J",
+      "I": "D",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 114
+  },
+  "BCDGHIKL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "I",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 113
+  },
+  "BCDGHJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "J",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 112
+  },
+  "BCDGIJKL": {
+    "allocation": {
+      "A": "I",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "J",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 111
+  },
+  "BCDHIJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "I",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 110
+  },
+  "BCEFGHIJ": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "J",
+      "I": "F",
+      "K": "E",
+      "L": "I"
+    },
+    "option": 109
+  },
+  "BCEFGHIK": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "H",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 108
+  },
+  "BCEFGHIL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 107
+  },
+  "BCEFGHJK": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "J",
+      "I": "F",
+      "K": "E",
+      "L": "K"
+    },
+    "option": 106
+  },
+  "BCEFGHJL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "J",
+      "I": "F",
+      "K": "L",
+      "L": "E"
+    },
+    "option": 105
+  },
+  "BCEFGHKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 104
+  },
+  "BCEFGIJK": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "J",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 103
+  },
+  "BCEFGIJL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "J",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 102
+  },
+  "BCEFGIKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "I",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 101
+  },
+  "BCEFGJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "J",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 100
+  },
+  "BCEFHIJK": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "H",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 99
+  },
+  "BCEFHIJL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 98
+  },
+  "BCEFHIKL": {
+    "allocation": {
+      "A": "E",
+      "B": "I",
+      "D": "B",
+      "E": "C",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 97
+  },
+  "BCEFHJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 96
+  },
+  "BCEFIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "I",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 95
+  },
+  "BCEGHIJK": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "H",
+      "I": "G",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 94
+  },
+  "BCEGHIJL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "H",
+      "I": "G",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 93
+  },
+  "BCEGHIKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "I",
+      "I": "H",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 92
+  },
+  "BCEGHJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "H",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 91
+  },
+  "BCEGIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "I",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 90
+  },
+  "BCEHIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "I",
+      "I": "H",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 89
+  },
+  "BCFGHIJK": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "J",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 88
+  },
+  "BCFGHIJL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "J",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 87
+  },
+  "BCFGHIKL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "I",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 86
+  },
+  "BCFGHJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "J",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 85
+  },
+  "BCFGIJKL": {
+    "allocation": {
+      "A": "I",
+      "B": "G",
+      "D": "B",
+      "E": "C",
+      "G": "J",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 84
+  },
+  "BCFHIJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "I",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 83
+  },
+  "BCGHIJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "C",
+      "G": "I",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 82
+  },
+  "BDEFGHIJ": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "J",
+      "I": "F",
+      "K": "E",
+      "L": "I"
+    },
+    "option": 81
+  },
+  "BDEFGHIK": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 80
+  },
+  "BDEFGHIL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 79
+  },
+  "BDEFGHJK": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "J",
+      "I": "F",
+      "K": "E",
+      "L": "K"
+    },
+    "option": 78
+  },
+  "BDEFGHJL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "J",
+      "I": "F",
+      "K": "L",
+      "L": "E"
+    },
+    "option": 77
+  },
+  "BDEFGHKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 76
+  },
+  "BDEFGIJK": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "J",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 75
+  },
+  "BDEFGIJL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "J",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 74
+  },
+  "BDEFGIKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "I",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 73
+  },
+  "BDEFGJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "J",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 72
+  },
+  "BDEFHIJK": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 71
+  },
+  "BDEFHIJL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 70
+  },
+  "BDEFHIKL": {
+    "allocation": {
+      "A": "E",
+      "B": "I",
+      "D": "B",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 69
+  },
+  "BDEFHJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 68
+  },
+  "BDEFIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "I",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 67
+  },
+  "BDEGHIJK": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "H",
+      "I": "G",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 66
+  },
+  "BDEGHIJL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "H",
+      "I": "G",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 65
+  },
+  "BDEGHIKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "I",
+      "I": "H",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 64
+  },
+  "BDEGHJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "H",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 63
+  },
+  "BDEGIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "I",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 62
+  },
+  "BDEHIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "I",
+      "I": "H",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 61
+  },
+  "BDFGHIJK": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "J",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 60
+  },
+  "BDFGHIJL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "J",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 59
+  },
+  "BDFGHIKL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "I",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 58
+  },
+  "BDFGHJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "J",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 57
+  },
+  "BDFGIJKL": {
+    "allocation": {
+      "A": "I",
+      "B": "G",
+      "D": "B",
+      "E": "D",
+      "G": "J",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 56
+  },
+  "BDFHIJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "I",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 55
+  },
+  "BDGHIJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "D",
+      "G": "I",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 54
+  },
+  "BEFGHIJK": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "F",
+      "G": "H",
+      "I": "G",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 53
+  },
+  "BEFGHIJL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "F",
+      "G": "H",
+      "I": "G",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 52
+  },
+  "BEFGHIKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "B",
+      "E": "F",
+      "G": "I",
+      "I": "H",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 51
+  },
+  "BEFGHJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "F",
+      "G": "H",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 50
+  },
+  "BEFGIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "F",
+      "G": "I",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 49
+  },
+  "BEFHIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "B",
+      "E": "F",
+      "G": "I",
+      "I": "H",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 48
+  },
+  "BEGHIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "I",
+      "E": "B",
+      "G": "H",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 47
+  },
+  "BFGHIJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "J",
+      "D": "B",
+      "E": "F",
+      "G": "I",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 46
+  },
+  "CDEFGHIJ": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "J",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "E",
+      "L": "I"
+    },
+    "option": 45
+  },
+  "CDEFGHIK": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "E",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 44
+  },
+  "CDEFGHIL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "E",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 43
+  },
+  "CDEFGHJK": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "J",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "E",
+      "L": "K"
+    },
+    "option": 42
+  },
+  "CDEFGHJL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "J",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "E"
+    },
+    "option": 41
+  },
+  "CDEFGHKL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "E",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 40
+  },
+  "CDEFGIJK": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "E",
+      "E": "D",
+      "G": "J",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 39
+  },
+  "CDEFGIJL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "E",
+      "E": "D",
+      "G": "J",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 38
+  },
+  "CDEFGIKL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "E",
+      "E": "D",
+      "G": "I",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 37
+  },
+  "CDEFGJKL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "E",
+      "E": "D",
+      "G": "J",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 36
+  },
+  "CDEFHIJK": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "E",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 35
+  },
+  "CDEFHIJL": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "E",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 34
+  },
+  "CDEFHIKL": {
+    "allocation": {
+      "A": "C",
+      "B": "E",
+      "D": "I",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 33
+  },
+  "CDEFHJKL": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "E",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 32
+  },
+  "CDEFIJKL": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "E",
+      "E": "D",
+      "G": "I",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 31
+  },
+  "CDEGHIJK": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "H",
+      "I": "D",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 30
+  },
+  "CDEGHIJL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "H",
+      "I": "D",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 29
+  },
+  "CDEGHIKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "I",
+      "E": "C",
+      "G": "H",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 28
+  },
+  "CDEGHJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "H",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 27
+  },
+  "CDEGIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "I",
+      "E": "C",
+      "G": "J",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 26
+  },
+  "CDEHIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "I",
+      "E": "C",
+      "G": "H",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 25
+  },
+  "CDFGHIJK": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "J",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 24
+  },
+  "CDFGHIJL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "J",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 23
+  },
+  "CDFGHIKL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "I",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 22
+  },
+  "CDFGHJKL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "J",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 21
+  },
+  "CDFGIJKL": {
+    "allocation": {
+      "A": "C",
+      "B": "G",
+      "D": "I",
+      "E": "D",
+      "G": "J",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 20
+  },
+  "CDFHIJKL": {
+    "allocation": {
+      "A": "C",
+      "B": "J",
+      "D": "I",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 19
+  },
+  "CDGHIJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "I",
+      "E": "C",
+      "G": "J",
+      "I": "D",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 18
+  },
+  "CEFGHIJK": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "H",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 17
+  },
+  "CEFGHIJL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 16
+  },
+  "CEFGHIKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "I",
+      "E": "C",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 15
+  },
+  "CEFGHJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "J",
+      "E": "C",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 14
+  },
+  "CEFGIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "I",
+      "E": "C",
+      "G": "J",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 13
+  },
+  "CEFHIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "I",
+      "E": "C",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 12
+  },
+  "CEGHIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "I",
+      "E": "C",
+      "G": "H",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 11
+  },
+  "CFGHIJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "I",
+      "E": "C",
+      "G": "J",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 10
+  },
+  "DEFGHIJK": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "J",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "I",
+      "L": "K"
+    },
+    "option": 9
+  },
+  "DEFGHIJL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "J",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "I"
+    },
+    "option": 8
+  },
+  "DEFGHIKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "I",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 7
+  },
+  "DEFGHJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "J",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 6
+  },
+  "DEFGIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "G",
+      "D": "I",
+      "E": "D",
+      "G": "J",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 5
+  },
+  "DEFHIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "I",
+      "E": "D",
+      "G": "H",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 4
+  },
+  "DEGHIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "I",
+      "E": "D",
+      "G": "H",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 3
+  },
+  "DFGHIJKL": {
+    "allocation": {
+      "A": "H",
+      "B": "G",
+      "D": "I",
+      "E": "D",
+      "G": "J",
+      "I": "F",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 2
+  },
+  "EFGHIJKL": {
+    "allocation": {
+      "A": "E",
+      "B": "J",
+      "D": "I",
+      "E": "F",
+      "G": "H",
+      "I": "G",
+      "K": "L",
+      "L": "K"
+    },
+    "option": 1
+  }
+}

@@ -1,0 +1,360 @@
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom'
+import { CoverPage } from './features/CoverPage'
+import { ManagerSetup, NationSelect, Tutorial } from './features/Onboarding'
+import { ConsoleGameShell } from './components/ConsoleGameShell'
+import {
+  MedicalCenter,
+  Preparation,
+  PressRoom,
+  Tactics,
+  Tournament,
+} from './features/ManagementScreens'
+import { ConsoleDashboard, ConsoleSquad } from './features/ConsoleScenes'
+import { MatchCenter } from './features/MatchCenter'
+import { ConcentrationHub } from './features/ConcentrationHub'
+import { initialCampaign, type CampaignUIState } from './features/ui-model'
+import { domainNations, tournamentData } from './data'
+import { createDefaultTactic } from './simulation/formations'
+import { deriveCampaignProgress, type ResolvedCampaignFixture } from './features/campaignProgress'
+import { deleteCampaign, exportCampaign, importCampaign, saveCampaign, SAVE_SCHEMA_VERSION } from './persistence/saveManager'
+import type { TournamentStage } from './domain'
+import { validGoalEvents } from './simulation/matchSummary'
+import { fairPlayDeductionFromEvents } from './simulation/campaign'
+import { simulateMatchAsync } from './simulation/workerClient'
+import { applyCampDecision } from './features/decisionEngine'
+import type { MetricEffects } from './features/concentrationData'
+import { disciplineEventsFromSimulation, suspendedPlayerIds } from './features/discipline'
+import { injuredPlayerIds, injuryEventsFromSimulation } from './features/availability'
+import { generateAgenda, generateWorldNotifications } from './features/campaignDirector'
+
+interface GameContextValue {
+  campaign: CampaignUIState
+  hasSave: boolean
+  hasLegacySave: boolean
+  updateCampaign: (patch: Partial<CampaignUIState> | ((state: CampaignUIState) => CampaignUIState)) => void
+  startNew: () => void
+  clearSave: () => void
+  continueDay: () => Promise<void>
+  exportSave: () => void
+  importSave: (file: File) => Promise<void>
+  exportLegacySave: () => void
+  discardLegacySave: () => void
+}
+
+const GameContext = createContext<GameContextValue | null>(null)
+const STORAGE_KEY = 'gm26-ui-campaign-v3'
+const LEGACY_STORAGE_KEY = 'gm26-ui-campaign-v2'
+const SLOT_ID = 'campaign-slot-1'
+
+function hydrateCampaign(value: Partial<CampaignUIState> = {}): CampaignUIState {
+  const hydrated: CampaignUIState = {
+    ...initialCampaign,
+    ...value,
+    experienceVersion: 3,
+    prologueComplete: value.prologueComplete ?? value.tutorialComplete ?? false,
+    unlockedModules: value.unlockedModules ?? ['squad'],
+    assistantVoiceEnabled: false,
+    audio: { ...initialCampaign.audio, ...value.audio, voice: 0, voiceEnabled: false, subtitles: true },
+    agenda: value.agenda ?? [],
+    worldNotifications: value.worldNotifications ?? [],
+    assistantMemory: { ...initialCampaign.assistantMemory, ...value.assistantMemory },
+    focusMemory: { ...initialCampaign.focusMemory, ...value.focusMemory },
+    manager: { ...initialCampaign.manager, ...value.manager },
+    inboxRead: value.inboxRead ?? [],
+    squadIds: value.squadIds ?? [],
+    squadConfirmed: Boolean(value.squadConfirmed && value.squadIds?.length === 26),
+    shirtNumbers: value.shirtNumbers ?? {},
+    trainingPlan: initialCampaign.trainingPlan.map((session, index) => value.trainingPlan?.[index] ?? session),
+    pressAnswers: value.pressAnswers ?? {},
+    decisionLog: value.decisionLog ?? [],
+    matchResults: value.matchResults ?? {},
+    tacticSettings: {
+      ...initialCampaign.tacticSettings,
+      ...value.tacticSettings,
+      roles: value.tacticSettings?.roles ?? {},
+      instructions: value.tacticSettings?.instructions ?? initialCampaign.tacticSettings.instructions,
+      positions: value.tacticSettings?.positions ?? {},
+    },
+  }
+  if (!hydrated.agenda.length) hydrated.agenda = generateAgenda(hydrated)
+  if (!hydrated.worldNotifications.length) hydrated.worldNotifications = generateWorldNotifications(hydrated)
+  return hydrated
+}
+
+function loadCampaign(): { state: CampaignUIState; hasSave: boolean } {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY) ?? localStorage.getItem(LEGACY_STORAGE_KEY)
+    if (!raw) return { state: hydrateCampaign(), hasSave: false }
+    const state = hydrateCampaign(JSON.parse(raw) as Partial<CampaignUIState>)
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+    return { state, hasSave: true }
+  } catch {
+    return { state: hydrateCampaign(), hasSave: false }
+  }
+}
+
+function simulationStage(stage: ResolvedCampaignFixture['stage']): TournamentStage {
+  return ({
+    GROUP: 'group', ROUND_OF_32: 'round-of-32', ROUND_OF_16: 'round-of-16',
+    QUARTER_FINAL: 'quarter-final', SEMI_FINAL: 'semi-final',
+    THIRD_PLACE: 'third-place', FINAL: 'final',
+  } as const)[stage]
+}
+
+async function simulateAIFixture(fixture: ResolvedCampaignFixture, playedAt: string, priorResults: CampaignUIState['matchResults']): Promise<CampaignUIState['matchResults'][string] | undefined> {
+  if (!fixture.homeNationId || !fixture.awayNationId) return undefined
+  const home = domainNations.find((nation) => nation.id === fixture.homeNationId)
+  const away = domainNations.find((nation) => nation.id === fixture.awayNationId)
+  if (!home || !away) return undefined
+  const homeSuspended = suspendedPlayerIds(priorResults, home.id)
+  const awaySuspended = suspendedPlayerIds(priorResults, away.id)
+  const homeInjured = injuredPlayerIds(priorResults, playedAt, home.id)
+  const awayInjured = injuredPlayerIds(priorResults, playedAt, away.id)
+  const result = await simulateMatchAsync({
+    id: fixture.id,
+    seed: `ai-${fixture.id}-gm26-v1`,
+    home,
+    away,
+    homeTactic: createDefaultTactic(home.tacticalIdentity === 'counter' ? '4-2-3-1' : '4-3-3', {
+      mentality: home.strength > away.strength + 5 ? 'positive' : 'balanced',
+      pressing: home.tacticalIdentity === 'high-press' ? 78 : 54,
+      tempo: home.tacticalIdentity === 'vertical' ? 73 : 55,
+    }),
+    awayTactic: createDefaultTactic(away.tacticalIdentity === 'low-block' ? '5-3-2' : '4-2-3-1', {
+      mentality: away.strength > home.strength + 5 ? 'positive' : 'balanced',
+      pressing: away.tacticalIdentity === 'high-press' ? 78 : 53,
+      tempo: away.tacticalIdentity === 'vertical' ? 73 : 54,
+    }),
+    stage: simulationStage(fixture.stage),
+    knockout: fixture.stage !== 'GROUP',
+    homeSquad: home.players.filter((player) => player.officialPreset && !homeSuspended.has(player.id) && !homeInjured.has(player.id)),
+    awaySquad: away.players.filter((player) => player.officialPreset && !awaySuspended.has(player.id) && !awayInjured.has(player.id)),
+    snapshotIntervalTicks: 1_000,
+  })
+  return {
+    fixtureId: fixture.id,
+    homeNationId: home.id,
+    awayNationId: away.id,
+    home: result.score.home,
+    away: result.score.away,
+    homePenalties: result.score.penalties?.home,
+    awayPenalties: result.score.penalties?.away,
+    homeXg: result.stats.home.xg,
+    awayXg: result.stats.away.xg,
+    homeYellowCards: result.stats.home.yellowCards,
+    awayYellowCards: result.stats.away.yellowCards,
+    homeRedCards: result.stats.home.redCards,
+    awayRedCards: result.stats.away.redCards,
+    homeFairPlayPoints: fairPlayDeductionFromEvents(result, 'home'),
+    awayFairPlayPoints: fairPlayDeductionFromEvents(result, 'away'),
+    discipline: disciplineEventsFromSimulation(result, home.id, away.id),
+    injuries: injuryEventsFromSimulation(result, home.id, away.id),
+    goals: validGoalEvents(result.events)
+      .map((event) => ({
+        playerId: event.playerId,
+        assistId: event.secondaryPlayerId,
+        nationId: event.side === 'home' ? home.id : away.id,
+        minute: Math.max(1, Math.floor(event.second / 60) + 1),
+      })),
+    playedAt,
+  }
+}
+
+const scheduledTrainingEffects: Record<string, MetricEffects> = {
+  'Recuperación': { recovery: 6, fatigue: -5 },
+  'Cohesión': { cohesion: 3, morale: 1, fatigue: 2 },
+  'Ataque': { tacticalFamiliarity: 3, morale: 1, fatigue: 4 },
+  'Defensa': { tacticalFamiliarity: 3, cohesion: 1, fatigue: 4 },
+  'Presión': { tacticalFamiliarity: 4, fatigue: 6, recovery: -2 },
+  'Transiciones': { tacticalFamiliarity: 4, fatigue: 4 },
+  'Balón parado': { tacticalFamiliarity: 3, cohesion: 1, fatigue: 2 },
+  'Penaltis': { tacticalFamiliarity: 2, pressure: -2, fatigue: 1 },
+}
+
+function applyScheduledTraining(campaign: CampaignUIState) {
+  if (campaign.decisionLog.some((item) => item.key === `training:${campaign.date}:primary`)) return campaign
+  const start = new Date('2026-05-25T12:00:00').getTime()
+  const index = Math.max(0, Math.floor((new Date(`${campaign.date}T12:00:00`).getTime() - start) / 86_400_000))
+  const session = campaign.trainingPlan[index % Math.max(1, campaign.trainingPlan.length)] ?? 'Recuperación'
+  return applyCampDecision(campaign, {
+    key: `training:${campaign.date}:scheduled`,
+    type: 'training',
+    label: `Microciclo · ${session}`,
+    effects: scheduledTrainingEffects[session] ?? { recovery: 2, fatigue: -1 },
+    madeAt: campaign.date,
+  })
+}
+
+function GameProvider({ children }: { children: ReactNode }) {
+  const loaded = useMemo(loadCampaign, [])
+  const [campaign, setCampaign] = useState(loaded.state)
+  const [hasSave, setHasSave] = useState(loaded.hasSave)
+  const [hasLegacySave, setHasLegacySave] = useState(() => Boolean(localStorage.getItem(LEGACY_STORAGE_KEY)))
+  const campaignRef = useRef(loaded.state)
+
+  useEffect(() => {
+    if (!hasSave || !campaign.manager.name || !campaign.nationId) return
+    void saveCampaign({
+      id: SLOT_ID,
+      name: `${campaign.manager.name} · Mundial 2026`,
+      managerName: `${campaign.manager.name} ${campaign.manager.surname}`.trim(),
+      nationId: campaign.nationId,
+      dataPackId: tournamentData.id,
+      currentDate: campaign.date,
+    }, campaign)
+  }, [campaign, hasSave])
+
+  const updateCampaign = useCallback((patch: Partial<CampaignUIState> | ((state: CampaignUIState) => CampaignUIState)) => {
+    setCampaign((current) => {
+      const changed = typeof patch === 'function' ? patch(current) : { ...current, ...patch }
+      const shouldRefresh = changed.date !== current.date || changed.squadConfirmed !== current.squadConfirmed || changed.hotelId !== current.hotelId || changed.fatigue !== current.fatigue || changed.pressure !== current.pressure
+      const next = shouldRefresh
+        ? { ...changed, agenda: generateAgenda(changed), worldNotifications: generateWorldNotifications(changed) }
+        : changed
+      campaignRef.current = next
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+      setHasSave(true)
+      return next
+    })
+  }, [])
+
+  const startNew = useCallback(() => {
+    const next = hydrateCampaign()
+    campaignRef.current = next
+    setCampaign(next)
+    setHasSave(false)
+  }, [])
+
+  const clearSave = useCallback(() => {
+    localStorage.removeItem(STORAGE_KEY)
+    void deleteCampaign(SLOT_ID)
+    const next = hydrateCampaign()
+    campaignRef.current = next
+    setCampaign(next)
+    setHasSave(false)
+  }, [])
+
+  const exportSave = useCallback(() => {
+    const current = campaignRef.current
+    exportCampaign({
+      schemaVersion: SAVE_SCHEMA_VERSION,
+      dataPackId: tournamentData.id,
+      savedAt: new Date().toISOString(),
+      state: current,
+    }, `${current.manager.name || 'seleccionador'}-${current.date}`)
+  }, [])
+
+  const exportLegacySave = useCallback(() => {
+    const raw = localStorage.getItem(LEGACY_STORAGE_KEY)
+    if (!raw) return
+    const blob = new Blob([raw], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const anchor = document.createElement('a')
+    anchor.href = url
+    anchor.download = `gloria-mundial-26-campana-v2-${new Date().toISOString().slice(0, 10)}.json`
+    anchor.click()
+    URL.revokeObjectURL(url)
+  }, [])
+
+  const discardLegacySave = useCallback(() => {
+    localStorage.removeItem(LEGACY_STORAGE_KEY)
+    setHasLegacySave(false)
+  }, [])
+
+  const importSave = useCallback(async (file: File) => {
+    const envelope = await importCampaign<Partial<CampaignUIState>>(file)
+    if (envelope.dataPackId !== tournamentData.id) throw new Error('La partida utiliza un pack de datos diferente.')
+    const next = hydrateCampaign(envelope.state)
+    campaignRef.current = next
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+    setCampaign(next)
+    setHasSave(true)
+  }, [])
+
+  const continueDay = useCallback(async () => {
+    const base = campaignRef.current
+    if (base.completed) return
+    const date = new Date(`${base.date}T12:00:00`)
+    date.setDate(date.getDate() + 1)
+    const nextDate = date.toISOString().slice(0, 10)
+    const results = { ...base.matchResults }
+    let simulatedAny = true
+    let safety = 0
+    while (simulatedAny && safety < 110) {
+      simulatedAny = false
+      safety += 1
+      const progress = deriveCampaignProgress(tournamentData, results, { controlledNationId: base.nationId })
+      const readyAI = progress.fixtures.filter((fixture) =>
+        fixture.status === 'ready'
+        && fixture.date.slice(0, 10) <= nextDate
+        && fixture.homeNationId !== base.nationId
+        && fixture.awayNationId !== base.nationId
+        && !results[fixture.id],
+      )
+      const simulated = await Promise.all(readyAI.map((fixture) => simulateAIFixture(fixture, nextDate, results)))
+      readyAI.forEach((fixture, index) => {
+        const result = simulated[index]
+        if (!result) return
+        results[fixture.id] = result
+        simulatedAny = true
+      })
+    }
+    const progress = deriveCampaignProgress(tournamentData, results, { controlledNationId: base.nationId })
+    updateCampaign((current) => {
+      if (current.date !== base.date) return current
+      const prepared = applyScheduledTraining(current)
+      return { ...prepared, date: nextDate, matchResults: results, completed: progress.completed }
+    })
+  }, [updateCampaign])
+
+  return <GameContext.Provider value={{ campaign, hasSave, hasLegacySave, updateCampaign, startNew, clearSave, continueDay, exportSave, importSave, exportLegacySave, discardLegacySave }}>{children}</GameContext.Provider>
+}
+
+export function useGame() {
+  const context = useContext(GameContext)
+  if (!context) throw new Error('useGame debe utilizarse dentro de GameProvider')
+  return context
+}
+
+function RequireCampaign({ children }: { children: ReactNode }) {
+  const { campaign } = useGame()
+  if (!campaign.manager.name || !campaign.nationId) return <Navigate to="/crear-seleccionador" replace />
+  return children
+}
+
+function NewGameEntry() {
+  const navigate = useNavigate()
+  const { startNew } = useGame()
+  useEffect(() => {
+    startNew()
+    navigate('/crear-seleccionador', { replace: true })
+  }, [navigate, startNew])
+  return null
+}
+
+export function App() {
+  return (
+    <GameProvider>
+      <Routes>
+        <Route path="/" element={<CoverPage />} />
+        <Route path="/nueva-partida" element={<NewGameEntry />} />
+        <Route path="/crear-seleccionador" element={<ManagerSetup />} />
+        <Route path="/elegir-seleccion" element={<NationSelect />} />
+        <Route path="/tutorial" element={<RequireCampaign><Tutorial /></RequireCampaign>} />
+        <Route path="/partido" element={<RequireCampaign><MatchCenter /></RequireCampaign>} />
+        <Route path="/juego" element={<RequireCampaign><ConsoleGameShell /></RequireCampaign>}>
+          <Route index element={<ConsoleDashboard />} />
+          <Route path="convocatoria" element={<ConsoleSquad />} />
+          <Route path="concentracion" element={<ConcentrationHub />} />
+          <Route path="tacticas" element={<Tactics />} />
+          <Route path="preparacion" element={<Preparation />} />
+          <Route path="medico" element={<MedicalCenter />} />
+          <Route path="prensa" element={<PressRoom />} />
+          <Route path="mundial" element={<Tournament />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </GameProvider>
+  )
+}
