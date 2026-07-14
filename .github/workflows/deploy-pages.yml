@@ -32,7 +32,7 @@ jobs:
       - name: Probar juego
         run: pnpm test
       - name: Construir para GitHub Pages
-        run: pnpm build -- --mode pages
+        run: pnpm build:pages
       - name: Configurar Pages
         uses: actions/configure-pages@v5
       - name: Subir artefacto
