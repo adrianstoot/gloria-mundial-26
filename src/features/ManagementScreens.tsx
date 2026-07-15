@@ -51,7 +51,15 @@ function formatDate(date: string) {
 export function Dashboard() {
   const navigate = useNavigate()
   const { campaign, nation, players } = currentData()
-  const progress = deriveCampaignProgress(tournamentData, campaign.matchResults, { controlledNationId: campaign.nationId })
+  const progress = deriveCampaignProgress(
+    {
+      ...tournamentData,
+      nations: campaign.customNations ?? tournamentData.nations,
+      fixtures: campaign.customFixtures ?? tournamentData.fixtures,
+    },
+    campaign.matchResults,
+    { controlledNationId: campaign.nationId }
+  )
   const nextFixture = progress.nextControlledFixture ?? progress.nextFixture
   const leftTeam = uiNations.find((item) => item.id === nextFixture?.homeNationId) ?? nation
   const rightTeam = uiNations.find((item) => item.id === nextFixture?.awayNationId) ?? uiNations.find((item) => item.group === nation?.group && item.id !== nation?.id) ?? uiNations[1]
@@ -321,9 +329,9 @@ export function Tactics() {
     const automatic = smartLineup(squad, formationSlots[activeFormation]!)
     return formationSlots[activeFormation]!.map((_, index) => campaign.tacticSettings.positions[`${activeFormation}:${index}`]?.playerId ?? automatic[index] ?? '')
   })
-  const [selectedSlot, setSelectedSlot] = useState(10)
-  const [dragged, setDragged] = useState<number | null>(null)
-  const [moving, setMoving] = useState<number | null>(null)
+  const [selectedSlot, setSelectedSlot] = useState<number | null>(null)
+  const [draggingSlot, setDraggingSlot] = useState<number | null>(null)
+  const [dragPreview, setDragPreview] = useState<{ x: number; y: number; position: string; rating: number } | null>(null)
   const [width, setWidth] = useState(campaign.tacticSettings.width)
   const [tempo, setTempo] = useState(campaign.tacticSettings.tempo)
   const [press, setPress] = useState(campaign.tacticSettings.pressing)
@@ -336,7 +344,9 @@ export function Tactics() {
   const [instructions, setInstructions] = useState(campaign.tacticSettings.instructions)
   const [saved, setSaved] = useState(false)
   const pitchRef = useRef<HTMLDivElement>(null)
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const slots = formationSlots[formation]
+
   const responsibilityRanking = (field: 'captainId' | 'penaltyTakerId' | 'cornerTakerId' | 'freeKickTakerId') => [...squad].sort((left, right) => {
     const score = (player: UIPlayer) => field === 'captainId'
       ? playerCaps(player) * .55 + (player.gameRatings.teamwork ?? playerOverall(player)) * .28 + (player.gameRatings.decisions ?? playerOverall(player)) * .17
@@ -347,62 +357,144 @@ export function Tactics() {
   })
   const recommendedResponsibility = (field: 'captainId' | 'penaltyTakerId' | 'cornerTakerId' | 'freeKickTakerId') => responsibilityRanking(field)[0]
 
+  // --- Auto-save: persist to campaign on any meaningful change ---
+  const autoSave = (overrides?: {
+    formationOverride?: string
+    mentalityOverride?: string
+    positionsOverride?: typeof positions
+    rolesOverride?: typeof roles
+    instructionsOverride?: string[]
+    widthOverride?: number
+    tempoOverride?: number
+    pressOverride?: number
+    lineOverride?: number
+    passingOverride?: number
+    transitionOverride?: typeof transition
+    markingOverride?: typeof marking
+    lineupOverride?: string[]
+  }) => {
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
+    saveTimerRef.current = setTimeout(() => {
+      const f = overrides?.formationOverride ?? formation
+      const m = overrides?.mentalityOverride ?? mentality
+      const p = overrides?.positionsOverride ?? positions
+      const r = overrides?.rolesOverride ?? roles
+      const ins = overrides?.instructionsOverride ?? instructions
+      const lu = overrides?.lineupOverride ?? lineup
+      const currentSlots = formationSlots[f]
+      const persistedPositions = { ...p }
+      currentSlots?.forEach(([defaultX, defaultY], index) => {
+        const key = `${f}:${index}`
+        persistedPositions[key] = { x: p[key]?.x ?? defaultX, y: p[key]?.y ?? defaultY, playerId: lu[index] }
+      })
+      updateCampaign((current) => ({
+        ...current,
+        tactic: f,
+        mentality: m,
+        captainId: current.captainId ?? recommendedResponsibility('captainId')?.id,
+        penaltyTakerId: current.penaltyTakerId ?? recommendedResponsibility('penaltyTakerId')?.id,
+        cornerTakerId: current.cornerTakerId ?? recommendedResponsibility('cornerTakerId')?.id,
+        freeKickTakerId: current.freeKickTakerId ?? recommendedResponsibility('freeKickTakerId')?.id,
+        decisionLog: current.decisionLog.some((item) => item.key === 'tactic:first-plan') ? current.decisionLog : [...current.decisionLog, { key: 'tactic:first-plan', type: 'tactic' as const, label: `${f} · ${m}`, effects: { tacticalFamiliarity: 2 }, madeAt: current.date }],
+        tacticalFamiliarity: current.decisionLog.some((item) => item.key === 'tactic:first-plan') ? current.tacticalFamiliarity : Math.min(100, current.tacticalFamiliarity + 2),
+        tacticSettings: {
+          width: overrides?.widthOverride ?? width,
+          tempo: overrides?.tempoOverride ?? tempo,
+          pressing: overrides?.pressOverride ?? press,
+          defensiveLine: overrides?.lineOverride ?? line,
+          passingDirectness: overrides?.passingOverride ?? passingDirectness,
+          transition: overrides?.transitionOverride ?? transition,
+          marking: overrides?.markingOverride ?? marking,
+          positions: persistedPositions,
+          roles: r,
+          instructions: ins,
+        },
+      }))
+      setSaved(true)
+      window.setTimeout(() => setSaved(false), 1800)
+    }, 350)
+  }
+
+  // Auto-save on first mount if no tactic decision exists yet
+  useEffect(() => {
+    if (!campaign.decisionLog.some((item) => item.type === 'tactic')) {
+      autoSave()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const swap = (from: number, to: number) => {
-    setLineup((current) => { const next = [...current]; [next[from], next[to]] = [next[to], next[from]]; return next })
-  }
-
-  const save = () => {
-    const persistedPositions = { ...positions }
-    slots.forEach(([defaultX, defaultY], index) => {
-      const key = `${formation}:${index}`
-      persistedPositions[key] = { x: positions[key]?.x ?? defaultX, y: positions[key]?.y ?? defaultY, playerId: lineup[index] }
+    setLineup((current) => {
+      const next = [...current]; [next[from], next[to]] = [next[to], next[from]]
+      autoSave({ lineupOverride: next })
+      return next
     })
-    updateCampaign((current) => ({
-      ...current,
-      tactic: formation,
-      mentality,
-      captainId: current.captainId ?? recommendedResponsibility('captainId')?.id,
-      penaltyTakerId: current.penaltyTakerId ?? recommendedResponsibility('penaltyTakerId')?.id,
-      cornerTakerId: current.cornerTakerId ?? recommendedResponsibility('cornerTakerId')?.id,
-      freeKickTakerId: current.freeKickTakerId ?? recommendedResponsibility('freeKickTakerId')?.id,
-      decisionLog: current.decisionLog.some((item) => item.key === 'tactic:first-plan') ? current.decisionLog : [...current.decisionLog, { key: 'tactic:first-plan', type: 'tactic', label: `${formation} · ${mentality}`, effects: { tacticalFamiliarity: 2 }, madeAt: current.date }],
-      tacticalFamiliarity: current.decisionLog.some((item) => item.key === 'tactic:first-plan') ? current.tacticalFamiliarity : Math.min(100, current.tacticalFamiliarity + 2),
-      tacticSettings: { width, tempo, pressing: press, defensiveLine: line, passingDirectness, transition, marking, positions: persistedPositions, roles, instructions },
-    }))
-    setPositions(persistedPositions)
-    setSaved(true)
-    window.setTimeout(() => setSaved(false), 2500)
   }
 
-  const movePlayer = (event: React.PointerEvent, index: number) => {
-    if (moving !== index || !pitchRef.current) return
+  // --- Direct drag on player (pointer-based) ---
+  const handlePitchPointerMove = (event: React.PointerEvent) => {
+    if (draggingSlot === null || !pitchRef.current) return
     const rect = pitchRef.current.getBoundingClientRect()
     const x = Math.max(7, Math.min(93, ((event.clientX - rect.left) / rect.width) * 100))
     const y = Math.max(8, Math.min(92, ((event.clientY - rect.top) / rect.height) * 100))
-    setPositions((current) => ({ ...current, [`${formation}:${index}`]: { ...current[`${formation}:${index}`], x, y, playerId: lineup[index] } }))
+    const pos = inferTacticalPosition(x, y)
+    const player = squad.find((item) => item.id === lineup[draggingSlot])
+    const rating = player ? effectivePositionRating(player, pos) : 0
+    setDragPreview({ x, y, position: pos, rating })
+    setPositions((current) => ({ ...current, [`${formation}:${draggingSlot}`]: { ...current[`${formation}:${draggingSlot}`], x, y, playerId: lineup[draggingSlot] } }))
+  }
+
+  const handlePitchPointerUp = () => {
+    if (draggingSlot !== null) {
+      autoSave()
+      setDraggingSlot(null)
+      setDragPreview(null)
+    }
+  }
+
+  // --- Click-to-place: click pitch to move selected player ---
+  const handlePitchClick = (event: React.MouseEvent) => {
+    if (selectedSlot === null || draggingSlot !== null || !pitchRef.current) return
+    const rect = pitchRef.current.getBoundingClientRect()
+    const x = Math.max(7, Math.min(93, ((event.clientX - rect.left) / rect.width) * 100))
+    const y = Math.max(8, Math.min(92, ((event.clientY - rect.top) / rect.height) * 100))
+    setPositions((current) => {
+      const next = { ...current, [`${formation}:${selectedSlot}`]: { ...current[`${formation}:${selectedSlot}`], x, y, playerId: lineup[selectedSlot] } }
+      autoSave({ positionsOverride: next })
+      return next
+    })
   }
 
   const cycleRole = (index: number, position: string) => {
     const key = `${formation}:${index}`
-    const options = roleOptions(position)
+    const options = roleOptionsExpanded(position)
     const current = roles[key] ?? options[0]
-    setRoles((value) => ({ ...value, [key]: options[(options.indexOf(current) + 1) % options.length]! }))
+    const nextRole = options[(options.indexOf(current) + 1) % options.length]!
+    setRoles((value) => {
+      const next = { ...value, [key]: nextRole }
+      autoSave({ rolesOverride: next })
+      return next
+    })
   }
 
   const putInLineup = (playerId: string) => {
+    if (selectedSlot === null) return
     setLineup((current) => {
       const next = [...current]
       const existing = next.indexOf(playerId)
       if (existing >= 0) [next[existing], next[selectedSlot]] = [next[selectedSlot], next[existing]]
       else next[selectedSlot] = playerId
+      autoSave({ lineupOverride: next })
       return next
     })
   }
 
   const toggleInstruction = (instruction: string) => {
-    setInstructions((current) => current.includes(instruction)
-      ? current.filter((item) => item !== instruction)
-      : [...current, instruction])
+    setInstructions((current) => {
+      const next = current.includes(instruction) ? current.filter((item) => item !== instruction) : [...current, instruction]
+      autoSave({ instructionsOverride: next })
+      return next
+    })
   }
 
   const cycleResponsibility = (field: 'captainId' | 'penaltyTakerId' | 'cornerTakerId' | 'freeKickTakerId') => {
@@ -416,9 +508,9 @@ export function Tactics() {
   const responsibilityName = (field: 'captainId' | 'penaltyTakerId' | 'cornerTakerId' | 'freeKickTakerId') =>
     squad.find((player) => player.id === campaign[field])?.shirtName ?? recommendedResponsibility(field)?.shirtName ?? 'Sin asignar'
 
-  const selectedPlayer = squad.find((player) => player.id === lineup[selectedSlot])
-  const selectedDefault = slots[selectedSlot] ?? slots[0]!
-  const selectedPosition = positions[`${formation}:${selectedSlot}`]
+  const selectedPlayer = selectedSlot !== null ? squad.find((player) => player.id === lineup[selectedSlot]) : undefined
+  const selectedDefault = selectedSlot !== null ? (slots[selectedSlot] ?? slots[0]!) : slots[0]!
+  const selectedPosition = selectedSlot !== null ? positions[`${formation}:${selectedSlot}`] : undefined
   const selectedTarget = inferTacticalPosition(selectedPosition?.x ?? selectedDefault[0], selectedPosition?.y ?? selectedDefault[1])
   const selectedSuitability = selectedPlayer ? positionSuitability(selectedPlayer, selectedTarget) : 0
   const selectedEffective = selectedPlayer ? effectivePositionRating(selectedPlayer, selectedTarget) : 0
@@ -427,36 +519,113 @@ export function Tactics() {
     const custom = positions[`${formation}:${index}`]
     return total + (player ? effectivePositionRating(player, inferTacticalPosition(custom?.x ?? x, custom?.y ?? y)) : 0)
   }, 0) / Math.max(1, slots.length))
-  const shapeAssessment = assessTacticalShape(slots.map(([x,y],index) => {
+  const shapeAssessment = assessTacticalShape(slots.map(([x, y], index) => {
     const custom = positions[`${formation}:${index}`]
-    const point = { x:custom?.x ?? x, y:custom?.y ?? y }
-    return { ...point, position:inferTacticalPosition(point.x,point.y) }
+    const point = { x: custom?.x ?? x, y: custom?.y ?? y }
+    return { ...point, position: inferTacticalPosition(point.x, point.y) }
   }))
   const tacticAdvice = buildAssistantAdvice(campaign, 'tactics')
 
+  // Line chemistry per unit
+  const lineChemistry = (unit: 'DEF' | 'MED' | 'ATK') => {
+    const indices = slots.map(([x, y], i) => {
+      const custom = positions[`${formation}:${i}`]
+      const pos = inferTacticalPosition(custom?.x ?? x, custom?.y ?? y)
+      const isDefence = ['GK', 'RB', 'RCB', 'CB', 'LCB', 'LB', 'RWB', 'LWB'].includes(pos)
+      const isAttack = ['RW', 'LW', 'SS', 'ST', 'AM'].includes(pos)
+      return unit === 'DEF' ? isDefence : unit === 'ATK' ? isAttack : !isDefence && !isAttack
+    })
+    const lineRatings = indices.map((inUnit, i) => {
+      if (!inUnit) return null
+      const player = squad.find((item) => item.id === lineup[i])
+      if (!player) return null
+      const custom = positions[`${formation}:${i}`]
+      return effectivePositionRating(player, inferTacticalPosition(custom?.x ?? slots[i]![0], custom?.y ?? slots[i]![1]))
+    }).filter((v): v is number => v !== null)
+    return lineRatings.length ? Math.round(lineRatings.reduce((s, v) => s + v, 0) / lineRatings.length) : 0
+  }
+
   return (
-    <div className="tactics-page page-enter">
+    <div className="tactics-page-v2 page-enter">
       {!campaign.prologueComplete && <SceneAssistant advice={tacticAdvice} step={4} />}
-      <section className="page-heading page-heading--compact"><div><span className="eyebrow"><Target /> IDENTIDAD DE JUEGO</span><h2>Tu idea, <em>sobre el césped</em></h2><p>Intercambia futbolistas, mueve cada posición libremente y define roles, ritmo, presión y transiciones.</p></div><div className="tactic-familiarity"><span><Users /> FAMILIARIDAD</span><b>{campaign.tacticalFamiliarity}%</b><Progress value={campaign.tacticalFamiliarity} tone="cyan" /></div><button className="button button--gold" onClick={save}>{saved ? <><Check /> GUARDADO</> : <>GUARDAR PLAN <ClipboardCheck /></>}</button></section>
-      <div className="tactics-toolbar"><div><span>FORMACIÓN</span><select value={formation} onChange={(event) => { const next=event.target.value;setFormation(next);setLineup(smartLineup(squad,formationSlots[next]!));setSelectedSlot(10) }}>{Object.keys(formationSlots).map((item) => <option key={item}>{item}</option>)}</select></div><div><span>MENTALIDAD</span><Segmented value={mentality} onChange={setMentality} options={['Cauta', 'Equilibrada', 'Positiva', 'Ofensiva']} label="Mentalidad" /></div><div className="match-plans"><span>PLANES RÁPIDOS</span><button onClick={() => { setMentality('Cauta'); setTempo(40); setPress(45) }}><Shield /> Proteger</button><button className="is-active" onClick={() => { setMentality('Equilibrada'); setTempo(62); setPress(66) }}><CircleDot /> Equilibrar</button><button onClick={() => { setMentality('Ofensiva'); setTempo(82); setPress(84) }}><Zap /> Remontar</button></div></div>
-      <div className="tactics-layout">
-        <aside className="tactic-controls panel">
+
+      {/* TOP BAR: Formation, Mentality, Quick Plans */}
+      <div className="tactics-topbar">
+        <div className="tactics-topbar__formation">
+          <span>FORMACIÓN</span>
+          <select value={formation} onChange={(event) => { const next = event.target.value; setFormation(next); const newLineup = smartLineup(squad, formationSlots[next]!); setLineup(newLineup); setSelectedSlot(null); autoSave({ formationOverride: next, lineupOverride: newLineup }) }}>
+            {Object.keys(formationSlots).map((item) => <option key={item}>{item}</option>)}
+          </select>
+        </div>
+        <div className="tactics-topbar__mentality">
+          <span>MENTALIDAD</span>
+          <Segmented value={mentality} onChange={(v) => { setMentality(v); autoSave({ mentalityOverride: v }) }} options={['Cauta', 'Equilibrada', 'Positiva', 'Ofensiva']} label="Mentalidad" />
+        </div>
+        <div className="tactics-topbar__plans">
+          <button onClick={() => { setMentality('Cauta'); setTempo(40); setPress(45); autoSave({ mentalityOverride: 'Cauta', tempoOverride: 40, pressOverride: 45 }) }}><Shield /> Proteger</button>
+          <button className={mentality === 'Equilibrada' ? 'is-active' : ''} onClick={() => { setMentality('Equilibrada'); setTempo(62); setPress(66); autoSave({ mentalityOverride: 'Equilibrada', tempoOverride: 62, pressOverride: 66 }) }}><CircleDot /> Equilibrar</button>
+          <button onClick={() => { setMentality('Ofensiva'); setTempo(82); setPress(84); autoSave({ mentalityOverride: 'Ofensiva', tempoOverride: 82, pressOverride: 84 }) }}><Zap /> Remontar</button>
+        </div>
+        <div className="tactics-topbar__save">
+          <span className={`save-indicator ${saved ? 'is-saved' : ''}`}>{saved ? <><Check /> GUARDADO</> : <><ClipboardCheck /> AUTO-SAVE</>}</span>
+        </div>
+      </div>
+
+      {/* MAIN LAYOUT: 3 columns */}
+      <div className="tactics-layout-v2">
+        {/* LEFT: Tactic Controls */}
+        <aside className="tactic-controls-v2">
           <header><span className="eyebrow">CON BALÓN</span><h3>Construcción</h3></header>
-          <TacticSlider label="Amplitud" left="Estrecha" right="Amplia" value={width} setValue={setWidth} icon={<ArrowRight />} />
-          <TacticSlider label="Ritmo" left="Paciente" right="Vertiginoso" value={tempo} setValue={setTempo} icon={<Timer />} />
-          <TacticSlider label="Pase" left="Combinativo" right="Directo" value={passingDirectness} setValue={setPassingDirectness} icon={<CircleDot />} />
-          <label className="select-control"><span>TRAS PÉRDIDA</span><select value={transition} onChange={(event) => setTransition(event.target.value as typeof transition)}><option value="hold-shape">Reagruparse</option><option value="balanced">Equilibrar</option><option value="counter">Contrapresión y salida</option></select></label>
-          <div className="instruction-list"><button className={instructions.includes('play-out') ? 'is-active' : ''} onClick={() => toggleInstruction('play-out')}>{instructions.includes('play-out') ? <Check /> : <Plus />} Salir jugando</button><button className={instructions.includes('overlap') ? 'is-active' : ''} onClick={() => toggleInstruction('overlap')}>{instructions.includes('overlap') ? <Check /> : <Plus />} Doblar por fuera</button><button className={instructions.includes('work-box') ? 'is-active' : ''} onClick={() => toggleInstruction('work-box')}>{instructions.includes('work-box') ? <Check /> : <Plus />} Llegar al área</button></div>
+          <TacticSliderV2 label="Amplitud" left="Estrecha" right="Amplia" value={width} setValue={(v) => { setWidth(v); autoSave({ widthOverride: v }) }} />
+          <TacticSliderV2 label="Ritmo" left="Paciente" right="Vertiginoso" value={tempo} setValue={(v) => { setTempo(v); autoSave({ tempoOverride: v }) }} />
+          <TacticSliderV2 label="Pase" left="Combinativo" right="Directo" value={passingDirectness} setValue={(v) => { setPassingDirectness(v); autoSave({ passingOverride: v }) }} />
+          <label className="select-control-v2"><span>TRANSICIÓN</span><select value={transition} onChange={(event) => { const v = event.target.value as typeof transition; setTransition(v); autoSave({ transitionOverride: v }) }}><option value="hold-shape">Reagruparse</option><option value="balanced">Equilibrar</option><option value="counter">Contrapresión</option></select></label>
+          <div className="instruction-list-v2">
+            <button className={instructions.includes('play-out') ? 'is-active' : ''} onClick={() => toggleInstruction('play-out')}>{instructions.includes('play-out') ? <Check /> : <Plus />} Salir jugando</button>
+            <button className={instructions.includes('overlap') ? 'is-active' : ''} onClick={() => toggleInstruction('overlap')}>{instructions.includes('overlap') ? <Check /> : <Plus />} Doblar por fuera</button>
+            <button className={instructions.includes('work-box') ? 'is-active' : ''} onClick={() => toggleInstruction('work-box')}>{instructions.includes('work-box') ? <Check /> : <Plus />} Llegar al área</button>
+          </div>
           <header><span className="eyebrow">SIN BALÓN</span><h3>Defensa</h3></header>
-          <TacticSlider label="Presión" left="Bloque" right="Asfixiante" value={press} setValue={setPress} icon={<Footprints />} />
-          <TacticSlider label="Altura de línea" left="Baja" right="Alta" value={line} setValue={setLine} icon={<Shield />} />
-          <label className="select-control"><span>MARCAJE</span><select value={marking} onChange={(event) => setMarking(event.target.value as typeof marking)}><option value="zonal">Zonal</option><option value="mixed">Mixto</option><option value="player">Al hombre</option></select></label>
-          <div className="instruction-list"><button className={instructions.includes('counter-press') ? 'is-active' : ''} onClick={() => toggleInstruction('counter-press')}>{instructions.includes('counter-press') ? <Check /> : <Plus />} Contra-presión</button><button className={instructions.includes('outside-trap') ? 'is-active' : ''} onClick={() => toggleInstruction('outside-trap')}>{instructions.includes('outside-trap') ? <Check /> : <Plus />} Trampa exterior</button></div>
+          <TacticSliderV2 label="Presión" left="Bloque" right="Asfixiante" value={press} setValue={(v) => { setPress(v); autoSave({ pressOverride: v }) }} />
+          <TacticSliderV2 label="Línea" left="Baja" right="Alta" value={line} setValue={(v) => { setLine(v); autoSave({ lineOverride: v }) }} />
+          <label className="select-control-v2"><span>MARCAJE</span><select value={marking} onChange={(event) => { const v = event.target.value as typeof marking; setMarking(v); autoSave({ markingOverride: v }) }}><option value="zonal">Zonal</option><option value="mixed">Mixto</option><option value="player">Al hombre</option></select></label>
+          <div className="instruction-list-v2">
+            <button className={instructions.includes('counter-press') ? 'is-active' : ''} onClick={() => toggleInstruction('counter-press')}>{instructions.includes('counter-press') ? <Check /> : <Plus />} Contra-presión</button>
+            <button className={instructions.includes('outside-trap') ? 'is-active' : ''} onClick={() => toggleInstruction('outside-trap')}>{instructions.includes('outside-trap') ? <Check /> : <Plus />} Trampa exterior</button>
+          </div>
         </aside>
-        <section className="tactic-board">
-          <div className="tactic-board__header"><span><span className="live-dot" /> ONCE TITULAR</span><small>Arrastra para intercambiar · {formation}</small></div>
-          <div className="tactic-pitch" ref={pitchRef}>
-            <div className="pitch-markings"><i className="pitch-markings__half" /><i className="pitch-markings__circle" /><i className="pitch-markings__box pitch-markings__box--top" /><i className="pitch-markings__box pitch-markings__box--bottom" /></div>
+
+        {/* CENTER: Vertical Pitch */}
+        <section className="tactic-board-v2">
+          <div className="tactic-board-v2__header"><span><span className="live-dot" /> ONCE TITULAR</span><small>Pulsa un jugador y arrastra para mover · {formation}</small></div>
+          <div
+            className="tactic-pitch-v2"
+            ref={pitchRef}
+            onPointerMove={handlePitchPointerMove}
+            onPointerUp={handlePitchPointerUp}
+            onClick={handlePitchClick}
+          >
+            {/* Pitch markings */}
+            <div className="pitch-markings-v2">
+              <i className="pm-v2__outline" />
+              <i className="pm-v2__half" />
+              <i className="pm-v2__circle" />
+              <i className="pm-v2__box pm-v2__box--top" />
+              <i className="pm-v2__box pm-v2__box--bottom" />
+              <i className="pm-v2__penalty-spot pm-v2__penalty-spot--top" />
+              <i className="pm-v2__penalty-spot pm-v2__penalty-spot--bottom" />
+              <i className="pm-v2__center-spot" />
+            </div>
+
+            {/* Drag preview zone indicator */}
+            {dragPreview && (
+              <div className="drag-zone-indicator" style={{ left: `${dragPreview.x}%`, top: `${dragPreview.y}%` }}>
+                <span className="drag-zone-indicator__pos">{dragPreview.position}</span>
+                <span className={`drag-zone-indicator__rating ${dragPreview.rating >= 80 ? 'is-great' : dragPreview.rating >= 70 ? 'is-ok' : 'is-poor'}`}>{dragPreview.rating}</span>
+              </div>
+            )}
+
+            {/* Players */}
             {slots.map(([x, y], index) => {
               const player = squad.find((item) => item.id === lineup[index])
               const key = `${formation}:${index}`
@@ -464,33 +633,124 @@ export function Tactics() {
               const dynamicPosition = inferTacticalPosition(custom?.x ?? x, custom?.y ?? y)
               const suitability = player ? positionSuitability(player, dynamicPosition) : 0
               const effective = player ? effectivePositionRating(player, dynamicPosition) : 0
-              const role = roles[key] ?? roleOptions(dynamicPosition)[0]
-              return <div key={`${formation}-${index}`} className={`tactic-player ${dragged === index ? 'is-dragging' : ''} ${moving === index ? 'is-moving' : ''} ${selectedSlot === index ? 'is-selected' : ''} ${suitability < 60 ? 'is-out-of-position' : suitability < 90 ? 'is-adapting' : ''}`} draggable onClick={() => setSelectedSlot(index)} onDragStart={() => setDragged(index)} onDragEnd={() => setDragged(null)} onDragOver={(event) => event.preventDefault()} onDrop={() => dragged !== null && swap(dragged, index)} style={{ left: `${Math.max(6, Math.min(94, custom?.x ?? x))}%`, top: `${Math.max(10, Math.min(75, custom?.y ?? y))}%` }}>
-                <button className="tactic-player__move" title="Mover posición" onPointerDown={(event) => { event.stopPropagation(); event.currentTarget.setPointerCapture(event.pointerId); setMoving(index) }} onPointerMove={(event) => movePlayer(event, index)} onPointerUp={() => setMoving(null)}><Move /></button>
-                <span className={`tactic-player__rating ${suitability >= 90 ? 'is-natural' : suitability >= 60 ? 'is-adapting' : 'is-risk'}`}>{effective || '—'}</span><TeamShirt nationId={player?.nationId ?? campaign.nationId} number={player ? (campaign.shirtNumbers[player.id] ?? index + 1) : index + 1} label={player?.shirtName} className="tactic-player__shirt" /><span className="tactic-player__name">{player?.shirtName ?? 'Elegir'}</span><button onClick={(event) => { event.stopPropagation(); cycleRole(index, dynamicPosition) }}>{dynamicPosition} · {role} <ChevronDown /></button>
-              </div>
+              const role = roles[key] ?? roleOptionsExpanded(dynamicPosition)[0]
+              const isDragging = draggingSlot === index
+              return (
+                <div
+                  key={`${formation}-${index}`}
+                  className={`tactic-player-v2 ${isDragging ? 'is-dragging' : ''} ${selectedSlot === index ? 'is-selected' : ''} ${suitability < 60 ? 'is-out-of-position' : suitability < 90 ? 'is-adapting' : 'is-natural'}`}
+                  style={{ left: `${Math.max(6, Math.min(94, custom?.x ?? x))}%`, top: `${Math.max(6, Math.min(94, custom?.y ?? y))}%` }}
+                  onClick={(event) => { event.stopPropagation(); setSelectedSlot(index) }}
+                  onPointerDown={(event) => {
+                    event.stopPropagation()
+                    event.currentTarget.setPointerCapture(event.pointerId)
+                    setDraggingSlot(index)
+                    setSelectedSlot(index)
+                  }}
+                >
+                  <span className={`tp-v2__rating ${suitability >= 90 ? 'is-natural' : suitability >= 60 ? 'is-adapting' : 'is-risk'}`}>{effective || '—'}</span>
+                  <TeamShirt nationId={player?.nationId ?? campaign.nationId} number={player ? (campaign.shirtNumbers[player.id] ?? index + 1) : index + 1} label={player?.shirtName} className="tp-v2__shirt" />
+                  <span className="tp-v2__name">{player?.shirtName ?? 'Elegir'}</span>
+                  <button className="tp-v2__role" onClick={(event) => { event.stopPropagation(); cycleRole(index, dynamicPosition) }}>{dynamicPosition} · {role} <ChevronDown /></button>
+                </div>
+              )
             })}
-            <div className="tactic-board__intensity"><span>INTENSIDAD DEL PLAN</span><div><i style={{ width: `${Math.round((tempo + press) / 2)}%` }} /></div><b>{Math.round((tempo + press) / 2)}%</b></div>
+
+            {/* Intensity bar at bottom */}
+            <div className="tactic-intensity-v2">
+              <span>INTENSIDAD</span>
+              <div><i style={{ width: `${Math.round((tempo + press) / 2)}%` }} /></div>
+              <b>{Math.round((tempo + press) / 2)}%</b>
+            </div>
           </div>
         </section>
-        <aside className="lineup-panel panel">
-          <section className="position-intelligence">
+
+        {/* RIGHT: Motor Posicional + Bench + Responsibilities */}
+        <aside className="lineup-panel-v2">
+          {/* Motor Posicional */}
+          <section className="motor-posicional-v2">
             <span className="eyebrow"><Brain /> MOTOR POSICIONAL</span>
-            <div><strong>{unitRating}</strong><span><b>Índice del once</b><small>Rendimiento efectivo en esta estructura</small></span></div>
-            {selectedPlayer ? <article><header><b>{selectedPlayer.shirtName}</b><em>{selectedTarget}</em></header><p><span>Base <b>{playerOverall(selectedPlayer)}</b></span><span>En el campo <b className={selectedEffective < playerOverall(selectedPlayer) ? 'is-negative' : 'is-positive'}>{selectedEffective}</b></span><span>Encaje <b>{selectedSuitability}%</b></span></p><small>{tacticalFitLabel(selectedSuitability)} · {selectedSuitability < 60 ? 'perderá referencias, tiempo de reacción y eficacia' : selectedSuitability < 90 ? 'necesita automatismos para rendir al máximo' : 'zona compatible con sus hábitos y atributos'}</small></article> : <p>Selecciona un futbolista para leer su adaptación.</p>}
-            <div className="shape-diagnosis"><span><b>ESTRUCTURA {shapeAssessment.score}</b><small>Amplitud {shapeAssessment.width} · Balance {shapeAssessment.verticalBalance}</small></span>{shapeAssessment.warnings.length?<ul>{shapeAssessment.warnings.map((warning)=><li key={warning}><ShieldAlert/>{warning}</li>)}</ul>:<p><CheckCircle2/> Estructura equilibrada y líneas conectadas.</p>}</div>
+            <div className="motor-unit-rating">
+              <strong>{unitRating}</strong>
+              <span><b>Índice del once</b><small>Rendimiento efectivo en esta estructura</small></span>
+            </div>
+
+            {/* Line chemistry */}
+            <div className="line-chemistry">
+              <div><small>DEF</small><b>{lineChemistry('DEF')}</b><i style={{ width: `${lineChemistry('DEF')}%` }} /></div>
+              <div><small>MED</small><b>{lineChemistry('MED')}</b><i style={{ width: `${lineChemistry('MED')}%` }} /></div>
+              <div><small>ATK</small><b>{lineChemistry('ATK')}</b><i style={{ width: `${lineChemistry('ATK')}%` }} /></div>
+            </div>
+
+            {/* Selected player detail */}
+            {selectedPlayer ? <article className="player-tactical-detail">
+              <header><b>{selectedPlayer.shirtName}</b><em>{selectedTarget}</em></header>
+              <div className="ptd-stats">
+                <span><small>Base</small><b>{playerOverall(selectedPlayer)}</b></span>
+                <span><small>Efectivo</small><b className={selectedEffective < playerOverall(selectedPlayer) ? 'is-negative' : 'is-positive'}>{selectedEffective}</b></span>
+                <span><small>Encaje</small><b>{selectedSuitability}%</b></span>
+              </div>
+              <div className="ptd-attributes">
+                <div><small>TEC</small><b>{selectedPlayer.gameRatings.technical ?? playerOverall(selectedPlayer)}</b></div>
+                <div><small>FIS</small><b>{selectedPlayer.gameRatings.physical ?? playerOverall(selectedPlayer)}</b></div>
+                <div><small>MEN</small><b>{selectedPlayer.gameRatings.mental ?? playerOverall(selectedPlayer)}</b></div>
+                <div><small>PAS</small><b>{selectedPlayer.gameRatings.passing ?? playerOverall(selectedPlayer)}</b></div>
+                <div><small>TIR</small><b>{selectedPlayer.gameRatings.finishing ?? playerOverall(selectedPlayer)}</b></div>
+                <div><small>DEF</small><b>{selectedPlayer.gameRatings.defending ?? (selectedPlayer.gameRatings as Record<string, number | undefined>).positioning ?? playerOverall(selectedPlayer)}</b></div>
+              </div>
+              <small className="ptd-fit">{tacticalFitLabel(selectedSuitability)} · {selectedSuitability < 60 ? 'perderá referencias y eficacia' : selectedSuitability < 90 ? 'necesita automatismos para rendir' : 'zona compatible con sus hábitos'}</small>
+            </article> : <p className="motor-hint">Selecciona un futbolista para ver su análisis.</p>}
+
+            {/* Shape diagnosis */}
+            <div className="shape-diagnosis-v2">
+              <span><b>ESTRUCTURA {shapeAssessment.score}</b><small>Amplitud {shapeAssessment.width} · Balance {shapeAssessment.verticalBalance}</small></span>
+              {shapeAssessment.warnings.length ? <ul>{shapeAssessment.warnings.map((warning) => <li key={warning}><ShieldAlert />{warning}</li>)}</ul> : <p><CheckCircle2 /> Estructura equilibrada y líneas conectadas.</p>}
+            </div>
           </section>
-          <header><span className="eyebrow">BANQUILLO</span><h3>Alternativas</h3></header>
-          <div className="bench-list">{squad.filter((player)=>!lineup.includes(player.id)).map((player) => <div key={player.id}><PlayerPortrait playerId={player.id} nationId={player.nationId} label={playerName(player)} size="sm" /><span><b>{player.shirtName}{starProfile(player) && <Star className="bench-star" />}</b><small>{player.position} · {playerClub(player)}</small></span><b className="overall">{playerOverall(player)}</b><button title={`Colocar en ${slots[selectedSlot]?.[2] ?? 'el once'}`} onClick={()=>putInLineup(player.id)}><Plus /></button></div>)}</div>
-          <div className="set-pieces"><span className="eyebrow">RESPONSABILIDADES · PULSA PARA CAMBIAR</span><button onClick={() => cycleResponsibility('captainId')}><CircleDot /><span><b>Capitán</b><small>{responsibilityName('captainId')}</small></span><ChevronRight /></button><button onClick={() => cycleResponsibility('penaltyTakerId')}><Goal /><span><b>Penaltis</b><small>{responsibilityName('penaltyTakerId')}</small></span><ChevronRight /></button><button onClick={() => cycleResponsibility('cornerTakerId')}><FlagIcon /><span><b>Córners</b><small>{responsibilityName('cornerTakerId')}</small></span><ChevronRight /></button><button onClick={() => cycleResponsibility('freeKickTakerId')}><Target /><span><b>Faltas</b><small>{responsibilityName('freeKickTakerId')}</small></span><ChevronRight /></button></div>
+
+          {/* Bench */}
+          <header className="bench-header-v2"><span className="eyebrow">BANQUILLO</span></header>
+          <div className="bench-list-v2">
+            {squad.filter((player) => !lineup.includes(player.id)).map((player) => (
+              <div key={player.id} className="bench-item-v2">
+                <span className="bench-item-v2__pos">{player.position}</span>
+                <span className="bench-item-v2__name">{player.shirtName}{starProfile(player) && <Star className="bench-star" />}</span>
+                <b className="bench-item-v2__ovr">{playerOverall(player)}</b>
+                <button title={`Colocar en el once`} onClick={() => putInLineup(player.id)}><Plus /></button>
+              </div>
+            ))}
+          </div>
+
+          {/* Responsibilities */}
+          <div className="set-pieces-v2">
+            <span className="eyebrow">RESPONSABILIDADES</span>
+            <button onClick={() => cycleResponsibility('captainId')}><CircleDot /><span><b>Capitán</b><small>{responsibilityName('captainId')}</small></span><ChevronRight /></button>
+            <button onClick={() => cycleResponsibility('penaltyTakerId')}><Goal /><span><b>Penaltis</b><small>{responsibilityName('penaltyTakerId')}</small></span><ChevronRight /></button>
+            <button onClick={() => cycleResponsibility('cornerTakerId')}><FlagIcon /><span><b>Córners</b><small>{responsibilityName('cornerTakerId')}</small></span><ChevronRight /></button>
+            <button onClick={() => cycleResponsibility('freeKickTakerId')}><Target /><span><b>Faltas</b><small>{responsibilityName('freeKickTakerId')}</small></span><ChevronRight /></button>
+          </div>
         </aside>
       </div>
     </div>
   )
 }
 
-function TacticSlider({ label, left, right, value, setValue, icon }: { label: string; left: string; right: string; value: number; setValue: (value: number) => void; icon: React.ReactNode }) {
-  return <label className="tactic-slider"><span>{icon}<b>{label}</b><strong>{value}</strong></span><input type="range" min="0" max="100" value={value} onChange={(event) => setValue(Number(event.target.value))} /><small><i>{left}</i><i>{right}</i></small></label>
+const roleOptionsExpanded = (position: string) => position === 'GK'
+  ? ['Guardameta', 'Portero libero', 'Portero adelantado']
+  : position.includes('B') || position.includes('WB')
+    ? ['Defensa', 'Constructor', 'Lateral profundo', 'Carrilero', 'Lateral invertido']
+    : ['DM', 'RCM', 'CM', 'LCM'].includes(position)
+      ? ['Ancla', 'Organizador', 'Box-to-Box', 'Llegador', 'Pivote defensivo', 'Regista']
+      : ['RM', 'LM'].includes(position)
+        ? ['Banda', 'Interior invertido', 'Carrilero', 'Volante']
+        : ['AM', 'SS'].includes(position)
+          ? ['Enganche', 'Media punta', 'Falso 9', 'Enlace']
+          : ['RW', 'LW'].includes(position)
+            ? ['Extremo', 'Extremo invertido', 'Regate', 'Interior']
+            : ['Delantero centro', 'Falso 9', 'Referencia', 'Depredador', 'Delantero móvil']
+
+function TacticSliderV2({ label, left, right, value, setValue }: { label: string; left: string; right: string; value: number; setValue: (value: number) => void }) {
+  return <label className="tactic-slider-v2"><span><b>{label}</b><strong>{value}</strong></span><input type="range" min="0" max="100" value={value} onChange={(event) => setValue(Number(event.target.value))} /><small><i>{left}</i><i>{right}</i></small></label>
 }
 
 const trainingOptions = [
@@ -562,7 +822,15 @@ export function MedicalCenter() {
 export function PressRoom() {
   const { campaign, updateCampaign } = useGame()
   const { nation } = currentData()
-  const progress = deriveCampaignProgress(tournamentData, campaign.matchResults, { controlledNationId: campaign.nationId })
+  const progress = deriveCampaignProgress(
+    {
+      ...tournamentData,
+      nations: campaign.customNations ?? tournamentData.nations,
+      fixtures: campaign.customFixtures ?? tournamentData.fixtures,
+    },
+    campaign.matchResults,
+    { controlledNationId: campaign.nationId }
+  )
   const conference = buildPressConference(campaign, progress)
   const questions = conference.questions
   const [current, setCurrent] = useState(0)
@@ -601,7 +869,15 @@ export function Tournament() {
   const { campaign } = useGame()
   const navigate = useNavigate()
   const [tab,setTab]=useState<'grupos'|'cuadro'|'calendario'|'estadisticas'>('calendario')
-  const progress = deriveCampaignProgress(tournamentData, campaign.matchResults, { controlledNationId: campaign.nationId })
+  const progress = deriveCampaignProgress(
+    {
+      ...tournamentData,
+      nations: campaign.customNations ?? tournamentData.nations,
+      fixtures: campaign.customFixtures ?? tournamentData.fixtures,
+    },
+    campaign.matchResults,
+    { controlledNationId: campaign.nationId }
+  )
   const groups = Object.keys(tournamentData.groups) as GroupId[]
   const champion = uiNations.find((nation) => nation.id === progress.championNationId)
   return <div className="tournament-page page-enter">

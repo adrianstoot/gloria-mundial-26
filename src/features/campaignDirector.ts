@@ -1,4 +1,6 @@
 import type { AgendaEvent, AgendaPriority, CampaignUIState, WorldNotification } from './ui-model'
+import { tournamentData } from '../data'
+import { deriveCampaignProgress } from './campaignProgress'
 
 export interface AssistantBriefing {
   id: string
@@ -48,15 +50,27 @@ function event(
 
 export function generateAgenda(campaign: CampaignUIState): AgendaEvent[] {
   const events: AgendaEvent[] = []
+  const customData = {
+    ...tournamentData,
+    nations: campaign.customNations ?? tournamentData.nations,
+    fixtures: campaign.customFixtures ?? tournamentData.fixtures,
+  }
+  const progress = deriveCampaignProgress(customData, campaign.matchResults, { controlledNationId: campaign.nationId })
+  const controlledFixtures = progress.fixtures.filter((fixture) => fixture.status === 'ready'
+    && (fixture.homeNationId === campaign.nationId || fixture.awayNationId === campaign.nationId))
   for (let offset = 0; offset < 10; offset += 1) {
     const date = addDays(campaign.date, offset)
     const trainingDone = campaign.decisionLog.some((item) => item.key.startsWith(`training:${date}:`))
-    if (offset === 0 && !campaign.squadConfirmed) events.push(event(date, '09:00', 'federation', 'Cerrar la lista de 26', 'La federación necesita una convocatoria equilibrada con tres porteros.', '/juego/convocatoria', { priority: 'critical', mandatory: true, durationMinutes: 90, effects: ['Equilibrio', 'Jerarquía'] }))
-    if (offset === 0 && !campaign.hotelId) events.push(event(date, '11:00', 'travel', 'Elegir la base del Mundial', 'Privacidad, viajes y recuperación cambiarán el contexto de cada partido.', '/juego/concentracion?seccion=hotel', { priority: 'high', mandatory: true, durationMinutes: 45, effects: ['Recuperación', 'Apoyo local'] }))
-    events.push(event(date, offset % 3 === 0 ? '10:30' : '11:15', trainingDone && offset === 0 ? 'recovery' : 'training', trainingDone && offset === 0 ? 'Recuperación dirigida' : offset % 3 === 1 ? 'Automatismos ofensivos' : offset % 3 === 2 ? 'Bloque y presión' : 'Activación y cohesión', 'Sesión diseñada según carga, momento del torneo y rival.', '/juego/concentracion?seccion=training', { priority: offset === 0 ? 'high' : 'normal', mandatory: offset === 0 && !trainingDone, durationMinutes: 75, effects: ['Fatiga', 'Familiaridad'] }))
+    const leisureDone = campaign.decisionLog.some((item) => item.type === 'leisure' && item.madeAt === date)
+    const pressDone = campaign.decisionLog.filter((item) => item.type === 'press' && item.madeAt === date).length >= 3
+    const fixture = controlledFixtures.find((item) => item.date.slice(0, 10) === date)
+    if (fixture) events.push(event(date, fixture.date.slice(11, 16) || '20:00', 'match', `Partido ${fixture.matchNumber} · ${fixture.stage === 'GROUP' ? `Grupo ${fixture.group}` : 'Eliminatoria'}`, 'El partido está listo. Entra al estadio para elegir el ritmo de simulación y dirigir al equipo.', `/partido?fixture=${fixture.id}`, { priority: 'critical', durationMinutes: 120, effects: ['Resultado', 'Clasificación', 'Fatiga'] }))
+    if (offset === 0 && !campaign.squadConfirmed) events.push(event(date, '09:00', 'federation', 'Revisar la lista de 26', 'Puedes mantener la propuesta inicial o ajustar la convocatoria antes del debut.', '/juego/convocatoria', { priority: 'high', durationMinutes: 45, effects: ['Equilibrio', 'Jerarquía'] }))
+    if (offset === 0 && !campaign.hotelId) events.push(event(date, '11:00', 'travel', 'Elegir la base del Mundial', 'Privacidad, viajes y recuperación cambiarán el contexto de cada partido.', '/juego/concentracion?seccion=hotel', { priority: 'high', durationMinutes: 45, effects: ['Recuperación', 'Apoyo local'] }))
+    if (!trainingDone) events.push(event(date, offset % 3 === 0 ? '10:30' : '11:15', 'training', offset % 3 === 1 ? 'Automatismos ofensivos' : offset % 3 === 2 ? 'Bloque y presión' : 'Activación y cohesión', 'Elige si quieres trabajar esta sesión. Si la omites, el estado del equipo no cambia.', '/juego/concentracion?seccion=training', { priority: offset === 0 ? 'high' : 'normal', durationMinutes: 75, effects: ['Fatiga', 'Familiaridad'] }))
     if (offset % 2 === 0) events.push(event(date, '16:30', 'medical', 'Control de disponibilidad', 'El equipo médico revisará fatiga, golpes y riesgo muscular.', '/juego/medico', { durationMinutes: 35, effects: ['Condición', 'Riesgo'] }))
-    if (offset % 3 === 1) events.push(event(date, '18:00', 'press', 'Ventana de medios', 'La presión pública puede trasladarse al vestuario.', '/juego/prensa', { priority: 'normal', durationMinutes: 30, effects: ['Presión', 'Confianza'] }))
-    if (offset % 3 === 2) events.push(event(date, '18:30', 'leisure', 'Tiempo del grupo', 'Una decisión corta sobre descanso, familia o convivencia.', '/juego/concentracion?seccion=leisure', { durationMinutes: 90, effects: ['Moral', 'Cohesión'] }))
+    if (offset % 3 === 1 && !pressDone) events.push(event(date, '18:00', 'press', 'Ventana de medios', 'La presión pública puede trasladarse al vestuario.', '/juego/prensa', { priority: 'normal', durationMinutes: 30, effects: ['Presión', 'Confianza'] }))
+    if (offset % 3 === 2 && !leisureDone) events.push(event(date, '18:30', 'leisure', 'Tiempo del grupo', 'Una decisión corta sobre descanso, familia o convivencia.', '/juego/concentracion?seccion=leisure', { durationMinutes: 90, effects: ['Moral', 'Cohesión'] }))
   }
   return events.sort((left, right) => left.date.localeCompare(right.date) || left.time.localeCompare(right.time))
 }
@@ -74,7 +88,7 @@ export function generateWorldNotifications(campaign: CampaignUIState): WorldNoti
 
 export function buildContextualBriefing(campaign: CampaignUIState, pathname: string): AssistantBriefing {
   const pending = campaign.agenda.filter((item) => item.date === campaign.date && item.status === 'pending')
-  const critical = pending.find((item) => item.mandatory)
+  const critical = pending.find((item) => item.type === 'match')
   const scene = pathname.includes('convocatoria') ? 'plantilla'
     : pathname.includes('tacticas') ? 'táctica'
       : pathname.includes('concentracion') ? 'concentración'
@@ -83,11 +97,11 @@ export function buildContextualBriefing(campaign: CampaignUIState, pathname: str
             : pathname.includes('mundial') ? 'Mundial' : 'Centro Mundial'
   if (critical) return {
     id: `alex-critical-${critical.id}`,
-    trigger: 'incident', urgency: 'critical', eyebrow: 'DECISIÓN OBLIGATORIA', headline: critical.title,
+    trigger: 'match', urgency: 'critical', eyebrow: 'DÍA DE PARTIDO', headline: critical.title,
     speech: `${critical.title}. ${critical.summary}`,
-    detail: `Hay ${pending.length} tareas abiertas hoy. Esta decisión debe resolverse antes de continuar.`, confidence: 97,
-    evidence: critical.effects, risks: ['Avanzar sin resolverla debilita la preparación'],
-    actions: [{ id: `open-${critical.id}`, label: 'Resolver ahora', route: critical.route }], repeat: 'critical',
+    detail: `La preparación previa ya está cerrada. El partido es ahora la misión principal del calendario.`, confidence: 97,
+    evidence: critical.effects, risks: ['El resultado modificará el grupo y el camino del torneo'],
+    actions: [{ id: `open-${critical.id}`, label: 'Jugar partido', route: critical.route }], repeat: 'critical',
   }
   const liveAlert = campaign.worldNotifications.find((item) => !item.read
     && !campaign.assistantMemory.appliedActionIds.includes(`alert-${item.id}`)

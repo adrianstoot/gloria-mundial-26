@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { Navigate, Route, Routes, useNavigate } from 'react-router-dom'
 import { CoverPage } from './features/CoverPage'
 import { ManagerSetup, NationSelect, Tutorial } from './features/Onboarding'
+import { WorldCupDraw } from './features/WorldCupDraw'
 import { ConsoleGameShell } from './components/ConsoleGameShell'
 import {
   MedicalCenter,
@@ -22,8 +23,6 @@ import type { TournamentStage } from './domain'
 import { validGoalEvents } from './simulation/matchSummary'
 import { fairPlayDeductionFromEvents } from './simulation/campaign'
 import { simulateMatchAsync } from './simulation/workerClient'
-import { applyCampDecision } from './features/decisionEngine'
-import type { MetricEffects } from './features/concentrationData'
 import { disciplineEventsFromSimulation, suspendedPlayerIds } from './features/discipline'
 import { injuredPlayerIds, injuryEventsFromSimulation } from './features/availability'
 import { generateAgenda, generateWorldNotifications } from './features/campaignDirector'
@@ -83,7 +82,8 @@ export function hydrateCampaign(value: Partial<CampaignUIState> = {}): CampaignU
       positions: value.tacticSettings?.positions ?? {},
     },
   }
-  if (!hydrated.agenda.length) hydrated.agenda = generateAgenda(hydrated)
+  const priorAgendaStatus = new Map((value.agenda ?? []).map((item) => [item.id, item.status]))
+  hydrated.agenda = generateAgenda(hydrated).map((item) => ({ ...item, status: priorAgendaStatus.get(item.id) ?? item.status }))
   if (!hydrated.worldNotifications.length) hydrated.worldNotifications = generateWorldNotifications(hydrated)
   return hydrated
 }
@@ -167,31 +167,6 @@ async function simulateAIFixture(fixture: ResolvedCampaignFixture, playedAt: str
   }
 }
 
-const scheduledTrainingEffects: Record<string, MetricEffects> = {
-  'Recuperación': { recovery: 6, fatigue: -5 },
-  'Cohesión': { cohesion: 3, morale: 1, fatigue: 2 },
-  'Ataque': { tacticalFamiliarity: 3, morale: 1, fatigue: 4 },
-  'Defensa': { tacticalFamiliarity: 3, cohesion: 1, fatigue: 4 },
-  'Presión': { tacticalFamiliarity: 4, fatigue: 6, recovery: -2 },
-  'Transiciones': { tacticalFamiliarity: 4, fatigue: 4 },
-  'Balón parado': { tacticalFamiliarity: 3, cohesion: 1, fatigue: 2 },
-  'Penaltis': { tacticalFamiliarity: 2, pressure: -2, fatigue: 1 },
-}
-
-function applyScheduledTraining(campaign: CampaignUIState) {
-  if (campaign.decisionLog.some((item) => item.key === `training:${campaign.date}:primary`)) return campaign
-  const start = new Date('2026-05-25T12:00:00').getTime()
-  const index = Math.max(0, Math.floor((new Date(`${campaign.date}T12:00:00`).getTime() - start) / 86_400_000))
-  const session = campaign.trainingPlan[index % Math.max(1, campaign.trainingPlan.length)] ?? 'Recuperación'
-  return applyCampDecision(campaign, {
-    key: `training:${campaign.date}:scheduled`,
-    type: 'training',
-    label: `Microciclo · ${session}`,
-    effects: scheduledTrainingEffects[session] ?? { recovery: 2, fatigue: -1 },
-    madeAt: campaign.date,
-  })
-}
-
 function GameProvider({ children }: { children: ReactNode }) {
   const loaded = useMemo(loadCampaign, [])
   const [campaign, setCampaign] = useState(loaded.state)
@@ -214,7 +189,13 @@ function GameProvider({ children }: { children: ReactNode }) {
   const updateCampaign = useCallback((patch: Partial<CampaignUIState> | ((state: CampaignUIState) => CampaignUIState)) => {
     setCampaign((current) => {
       const changed = typeof patch === 'function' ? patch(current) : { ...current, ...patch }
-      const shouldRefresh = changed.date !== current.date || changed.squadConfirmed !== current.squadConfirmed || changed.hotelId !== current.hotelId || changed.fatigue !== current.fatigue || changed.pressure !== current.pressure
+      const shouldRefresh = changed.date !== current.date
+        || changed.squadConfirmed !== current.squadConfirmed
+        || changed.hotelId !== current.hotelId
+        || changed.fatigue !== current.fatigue
+        || changed.pressure !== current.pressure
+        || changed.decisionLog.length !== current.decisionLog.length
+        || Object.keys(changed.pressAnswers).length !== Object.keys(current.pressAnswers).length
       const next = shouldRefresh
         ? { ...changed, agenda: generateAgenda(changed), worldNotifications: generateWorldNotifications(changed) }
         : changed
@@ -287,10 +268,15 @@ function GameProvider({ children }: { children: ReactNode }) {
     const results = { ...base.matchResults }
     let simulatedAny = true
     let safety = 0
+    const customData = {
+      ...tournamentData,
+      nations: base.customNations ?? tournamentData.nations,
+      fixtures: base.customFixtures ?? tournamentData.fixtures,
+    }
     while (simulatedAny && safety < 110) {
       simulatedAny = false
       safety += 1
-      const progress = deriveCampaignProgress(tournamentData, results, { controlledNationId: base.nationId })
+      const progress = deriveCampaignProgress(customData, results, { controlledNationId: base.nationId })
       const readyAI = progress.fixtures.filter((fixture) =>
         fixture.status === 'ready'
         && fixture.date.slice(0, 10) <= nextDate
@@ -306,11 +292,10 @@ function GameProvider({ children }: { children: ReactNode }) {
         simulatedAny = true
       })
     }
-    const progress = deriveCampaignProgress(tournamentData, results, { controlledNationId: base.nationId })
+    const progress = deriveCampaignProgress(customData, results, { controlledNationId: base.nationId })
     updateCampaign((current) => {
       if (current.date !== base.date) return current
-      const prepared = applyScheduledTraining(current)
-      return { ...prepared, date: nextDate, matchResults: results, completed: progress.completed }
+      return { ...current, date: nextDate, matchResults: results, completed: progress.completed }
     })
   }, [updateCampaign])
 
@@ -347,6 +332,7 @@ export function App() {
         <Route path="/nueva-partida" element={<NewGameEntry />} />
         <Route path="/crear-seleccionador" element={<ManagerSetup />} />
         <Route path="/elegir-seleccion" element={<NationSelect />} />
+        <Route path="/sorteo" element={<RequireCampaign><WorldCupDraw /></RequireCampaign>} />
         <Route path="/tutorial" element={<RequireCampaign><Tutorial /></RequireCampaign>} />
         <Route path="/partido" element={<RequireCampaign><MatchCenter /></RequireCampaign>} />
         <Route path="/juego" element={<RequireCampaign><ConsoleGameShell /></RequireCampaign>}>

@@ -136,7 +136,14 @@ export function MatchCenter() {
   const [searchParams] = useSearchParams()
   const { campaign, updateCampaign } = useGame()
   const rawControlled = domainNations.find((nation) => nation.id === campaign.nationId) ?? domainNations[0]!
-  const progress = useMemo(() => deriveCampaignProgress(tournamentData, campaign.matchResults, { controlledNationId: campaign.nationId }), [campaign.matchResults, campaign.nationId])
+  const progress = useMemo(() => {
+    const customData = {
+      ...tournamentData,
+      nations: campaign.customNations ?? tournamentData.nations,
+      fixtures: campaign.customFixtures ?? tournamentData.fixtures,
+    }
+    return deriveCampaignProgress(customData, campaign.matchResults, { controlledNationId: campaign.nationId })
+  }, [campaign.matchResults, campaign.nationId, campaign.customNations, campaign.customFixtures])
   const requestedFixture = searchParams.get('fixture')
   const fixture = (requestedFixture ? progress.fixturesById[requestedFixture] : undefined)
     ?? (progress.nextControlledFixture && progress.nextControlledFixture.date.slice(0, 10) <= campaign.date ? progress.nextControlledFixture : undefined)
@@ -329,7 +336,12 @@ export function MatchCenter() {
           playedAt: current.date,
         },
       }
-      const nextProgress = deriveCampaignProgress(tournamentData, matchResults, { controlledNationId: current.nationId })
+      const customData = {
+        ...tournamentData,
+        nations: current.customNations ?? tournamentData.nations,
+        fixtures: current.customFixtures ?? tournamentData.fixtures,
+      }
+      const nextProgress = deriveCampaignProgress(customData, matchResults, { controlledNationId: current.nationId })
       return { ...current, matchResults, completed: nextProgress.completed }
     })
   }, [away.id, fixture, home.id, updateCampaign])

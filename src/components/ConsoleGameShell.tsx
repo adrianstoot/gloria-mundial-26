@@ -7,8 +7,6 @@ import { useGame } from '../App'
 import { uiNations } from '../features/ui-model'
 import { tournamentData } from '../data'
 import { deriveCampaignProgress } from '../features/campaignProgress'
-import { buildPressConference, pressConferenceComplete } from '../features/pressConference'
-import { prologueStage, prologueStages, stageTarget } from '../features/experienceDirector'
 import { buildContextualBriefing } from '../features/campaignDirector'
 import { audioDirector } from '../audio/audioDirector'
 
@@ -94,15 +92,16 @@ export function ConsoleGameShell() {
   const [notificationsOpen, setNotificationsOpen] = useState(false)
   const [advancing, setAdvancing] = useState(false)
   const nation = uiNations.find((item) => item.id === campaign.nationId)
-  const progress = useMemo(() => deriveCampaignProgress(tournamentData, campaign.matchResults, { controlledNationId: campaign.nationId }), [campaign.matchResults, campaign.nationId])
-  const conferenceComplete = pressConferenceComplete(campaign, buildPressConference(campaign, progress))
-  const stage = prologueStage(campaign, conferenceComplete)
-  const stageIndex = prologueStages.findIndex((item) => item.id === stage)
-  const expectedTarget = stageTarget(stage)
+  const progress = useMemo(() => {
+    const customData = {
+      ...tournamentData,
+      nations: campaign.customNations ?? tournamentData.nations,
+      fixtures: campaign.customFixtures ?? tournamentData.fixtures,
+    }
+    return deriveCampaignProgress(customData, campaign.matchResults, { controlledNationId: campaign.nationId })
+  }, [campaign.matchResults, campaign.nationId, campaign.customNations, campaign.customFixtures])
   const nextFixture = progress.nextControlledFixture
   const pendingFixture = nextFixture && nextFixture.date.slice(0, 10) <= campaign.date ? nextFixture : undefined
-  const todayAgenda = campaign.agenda.filter((item) => item.date === campaign.date && item.status === 'pending')
-  const blocking = todayAgenda.find((item) => item.mandatory)
   const briefing = useMemo(() => buildContextualBriefing(campaign, location.pathname), [campaign, location.pathname])
 
   const goBack = useCallback(() => {
@@ -166,21 +165,15 @@ export function ConsoleGameShell() {
 
   useEffect(() => {
     if (campaign.prologueComplete) return
-    const unlocked = prologueStages.slice(0, stageIndex + 1).map((item) => item.id === 'hub' ? 'hub' : item.id) as typeof campaign.unlockedModules
-    const completing = stage === 'hub'
-    if (campaign.unlockedModules.join('|') !== unlocked.join('|') || completing) updateCampaign((current) => ({ ...current, unlockedModules: completing ? ['squad','hotel','training','tactics','press','hub'] : unlocked, prologueComplete: completing }))
-    if (!location.pathname.startsWith(expectedTarget.split('?')[0])) navigate(expectedTarget, { replace: true })
-  }, [campaign.prologueComplete, campaign.unlockedModules, expectedTarget, location.pathname, navigate, stage, stageIndex, updateCampaign])
+    updateCampaign((current) => ({ ...current, prologueComplete: true, tutorialComplete: true, unlockedModules: ['squad','hotel','training','tactics','press','hub'] }))
+  }, [campaign.prologueComplete, updateCampaign])
 
   useEffect(() => {
     if (campaign.assistantMemory.heardBriefingIds.includes(briefing.id)) return
-    if (!campaign.prologueComplete) setAssistantOpen(true)
     updateCampaign((current) => ({ ...current, assistantMemory: { ...current.assistantMemory, heardBriefingIds: [briefing.id, ...current.assistantMemory.heardBriefingIds].slice(0, 80), lastContext: location.pathname } }))
   }, [briefing.id, campaign.assistantMemory.heardBriefingIds, campaign.prologueComplete, location.pathname, updateCampaign])
 
   const advance = async () => {
-    if (!campaign.prologueComplete) { navigate(expectedTarget); return }
-    if (blocking) { navigate(blocking.route); audioDirector.cue('alert'); return }
     if (pendingFixture) { navigate(`/partido?fixture=${pendingFixture.id}`); return }
     setAdvancing(true)
     try { await continueDay() } finally { setAdvancing(false) }
@@ -207,7 +200,7 @@ export function ConsoleGameShell() {
       <div className="console-status">
         {nation && <span><Flag code={nation.flagCode} label={nation.name} /><i>{date.toUpperCase()}</i><b>{nation.code}</b></span>}
         <button className="console-icon" onClick={() => setNotificationsOpen((value) => !value)} aria-label="Notificaciones"><Bell /><em>{campaign.worldNotifications.filter((item) => !item.read).length}</em></button>
-        <button className="console-continue" onClick={() => void advance()} disabled={advancing}><small>{blocking ? 'DECISIÓN PENDIENTE' : pendingFixture ? 'DÍA DE PARTIDO' : 'SIGUIENTE'}</small><b>{advancing ? 'SIMULANDO…' : blocking ? 'RESOLVER' : pendingFixture ? 'JUGAR' : 'CONTINUAR'}</b><ChevronRight /></button>
+        <button className="console-continue" onClick={() => void advance()} disabled={advancing}><small>{pendingFixture ? 'DÍA DE PARTIDO' : 'AVANZAR UN DÍA'}</small><b>{advancing ? 'SIMULANDO…' : pendingFixture ? 'JUGAR PARTIDO' : 'CONTINUAR'}</b><ChevronRight /></button>
         <button className="console-icon" onClick={() => setSettingsOpen(true)} aria-label="Ajustes"><Settings /></button>
       </div>
     </header>
@@ -218,7 +211,7 @@ export function ConsoleGameShell() {
       <button className={`assistant-core ${assistantOpen ? 'is-open' : ''}`} data-console-focus-key="alex" onClick={() => { setAssistantDetail(false); setAssistantOpen((value) => !value) }}>
         <span className="assistant-core__orb"><i /><i /><i /><Sparkles /></span>
         <span className="assistant-core__copy"><small>ÁLEX VEGA · {briefing.eyebrow}</small><b>{briefing.headline}</b><em>{briefing.detail}</em></span>
-        <span className="assistant-core__mission"><small>{campaign.prologueComplete ? 'INFORME DEL DÍA' : `MISIÓN ${Math.min(stageIndex + 1, 5)}/5`}</small><b>ABRIR PLAN <ChevronRight /></b></span>
+        <span className="assistant-core__mission"><small>INFORME DEL DÍA</small><b>ABRIR PLAN <ChevronRight /></b></span>
       </button>
       <div className="console-hints"><span><kbd>A</kbd> ELEGIR</span><span><kbd>B</kbd> ATRÁS</span><span><kbd>☰</kbd> AJUSTES</span></div>
     </footer>

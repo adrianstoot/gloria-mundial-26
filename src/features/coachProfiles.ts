@@ -15,6 +15,7 @@ export interface CoachProfile {
   accent: 'cyan' | 'gold' | 'coral'
   indicators: Array<{ label: string; value: number }>
   modifiers: MetricEffects
+  objectPosition?: string
 }
 
 export const coachProfiles: CoachProfile[] = [
@@ -34,6 +35,7 @@ export const coachProfiles: CoachProfile[] = [
       { label: 'Impulso', value: 72 },
     ],
     modifiers: { tacticalFamiliarity: 2, cohesion: 1, pressure: -1 },
+    objectPosition: 'center 10%',
   },
   {
     id: 'lukas-varga',
@@ -51,6 +53,7 @@ export const coachProfiles: CoachProfile[] = [
       { label: 'Impulso', value: 70 },
     ],
     modifiers: { tacticalFamiliarity: 1, cohesion: 2, morale: -1 },
+    objectPosition: 'center 0%',
   },
   {
     id: 'tomas-ferreyra',
@@ -68,6 +71,7 @@ export const coachProfiles: CoachProfile[] = [
       { label: 'Impulso', value: 94 },
     ],
     modifiers: { morale: 2, cohesion: 1, pressure: 1 },
+    objectPosition: 'center 0%',
   },
 ]
 

@@ -1,4 +1,4 @@
-import { nations as sourceNations, playersByNation as sourcePlayersByNation } from '../data'
+import { nations as sourceNations, playersByNation as sourcePlayersByNation, type Nation, type TournamentFixture } from '../data'
 
 export interface UINation {
   id: string
@@ -6,8 +6,8 @@ export interface UINation {
   shortName: string
   code: string
   flagCode: string
-  group: string
-  confederation: string
+  group: Nation['group']
+  confederation: Nation['confederation']
   worldRanking: number
   teamRating: number
   style: string
@@ -41,6 +41,7 @@ export interface UIPlayer {
     technique?: number
     passing?: number
     finishing?: number
+    defending?: number
     decisions?: number
     composure?: number
     teamwork?: number
@@ -77,7 +78,7 @@ export function playerOverall(player: UIPlayer): number {
   return ratings.length ? Math.round(ratings.reduce((total, value) => total + value, 0) / ratings.length) : 70
 }
 
-export const defaultNation = uiNations.find((nation) => nation.flagCode === 'es') ?? uiNations[0]
+export const defaultNation = uiNations.find((nation) => nation.flagCode === 'ma') ?? uiNations[0]
 
 export interface ManagerProfile {
   name: string
@@ -85,6 +86,7 @@ export interface ManagerProfile {
   nationality: string
   experience: 'novato' | 'profesional' | 'leyenda'
   coachId: import('./coachProfiles').CoachProfileId
+  specialization?: 'tactica' | 'gestion' | 'impulso'
 }
 
 export type AgendaEventType = 'match' | 'travel' | 'training' | 'recovery' | 'press' | 'medical' | 'meeting' | 'leisure' | 'federation' | 'news'
@@ -164,6 +166,8 @@ export interface CampaignUIState {
   mentality: string
   date: string
   tutorialComplete: boolean
+  customFixtures?: TournamentFixture[]
+  customNations?: Nation[]
   inboxRead: string[]
   trainingPlan: string[]
   pressAnswers: Record<string, string>
@@ -230,7 +234,7 @@ export const initialCampaign: CampaignUIState = {
   worldNotifications: [],
   assistantMemory: { heardBriefingIds: [], appliedActionIds: [], dismissedActionIds: [], postponedActionIds: [] },
   focusMemory: { hub: 'calendar' },
-  manager: { name: '', surname: '', nationality: 'España', experience: 'novato', coachId: 'amine-el-mansouri' },
+  manager: { name: '', surname: '', nationality: 'España', experience: 'novato', coachId: 'amine-el-mansouri', specialization: 'tactica' },
   nationId: defaultNation?.id ?? '',
   difficulty: 'realista',
   squadIds: [],

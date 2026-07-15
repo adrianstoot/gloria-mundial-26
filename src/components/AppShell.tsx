@@ -29,7 +29,14 @@ export function AppShell() {
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [advancing, setAdvancing] = useState(false)
   const nation = uiNations.find((item) => item.id === campaign.nationId)
-  const progress = useMemo(() => deriveCampaignProgress(tournamentData, campaign.matchResults, { controlledNationId: campaign.nationId }), [campaign.matchResults, campaign.nationId])
+  const progress = useMemo(() => {
+    const customData = {
+      ...tournamentData,
+      nations: campaign.customNations ?? tournamentData.nations,
+      fixtures: campaign.customFixtures ?? tournamentData.fixtures,
+    }
+    return deriveCampaignProgress(customData, campaign.matchResults, { controlledNationId: campaign.nationId })
+  }, [campaign.matchResults, campaign.nationId, campaign.customNations, campaign.customFixtures])
   const conferenceComplete = pressConferenceComplete(campaign, buildPressConference(campaign, progress))
   const stage = prologueStage(campaign, conferenceComplete)
   const stageIndex = prologueStages.findIndex((item) => item.id === stage)
