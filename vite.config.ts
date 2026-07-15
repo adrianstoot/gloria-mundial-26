@@ -24,7 +24,7 @@ export default defineConfig(({ mode }) => {
       publicAssetBase,
       react(),
       VitePWA({
-        registerType: 'prompt',
+        registerType: 'autoUpdate',
         includeAssets: ['icons/icon.svg'],
         manifest: {
           name: 'Gloria Mundial 26',
@@ -41,6 +41,9 @@ export default defineConfig(({ mode }) => {
           ],
         },
         workbox: {
+          skipWaiting: true,
+          clientsClaim: true,
+          cleanupOutdatedCaches: true,
           globPatterns: ['**/*.{js,css,html,svg,png,jpg,jpeg,webp,woff2,ogg,mp3}'],
           maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
           navigateFallback: 'index.html',
