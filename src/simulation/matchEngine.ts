@@ -266,10 +266,10 @@ function createRuntimeTeam(side: Side, nation: Nation, requestedSquad: Player[] 
   const onPitch = prepared.slots.map((slot, index): RuntimePlayer => {
     const sourcePlayer = slot.playerId ? playerMap.get(slot.playerId) : undefined
     if (!sourcePlayer) throw new Error(`No se pudo cubrir la posición ${slot.position} de ${nation.name}.`)
-    const effectiveOverall = effectivePositionRating(sourcePlayer, slot.position)
+    const effectiveOverall = slot.effectiveRating ?? effectivePositionRating(sourcePlayer, slot.position)
     const suitability = positionSuitability(sourcePlayer, slot.position)
     const scale = effectiveOverall / Math.max(1, sourcePlayer.gameRatings.overall)
-    const player: Player = suitability >= 94 ? sourcePlayer : {
+    const player: Player = Math.abs(scale - 1) < .005 ? sourcePlayer : {
       ...sourcePlayer,
       gameRatings: Object.fromEntries(Object.entries(sourcePlayer.gameRatings).map(([key, value]) => [
         key,

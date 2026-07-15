@@ -91,6 +91,7 @@ export interface ManagerProfile {
 
 export type AgendaEventType = 'match' | 'travel' | 'training' | 'recovery' | 'press' | 'medical' | 'meeting' | 'leisure' | 'federation' | 'news'
 export type AgendaPriority = 'critical' | 'high' | 'normal' | 'low'
+export type TeamMetric = 'morale' | 'federation' | 'cohesion' | 'fatigue' | 'pressure' | 'tacticalFamiliarity' | 'climateAdaptation' | 'localSupport' | 'recovery' | 'physicalRisk'
 
 export interface AgendaEvent {
   id: string
@@ -105,6 +106,32 @@ export interface AgendaEvent {
   status: 'pending' | 'completed' | 'expired'
   route: string
   effects: string[]
+  recommendedAction: string
+  skipEffects: Partial<Record<TeamMetric, number>>
+  expiresAt: string
+}
+
+export interface MissionResolution {
+  status: 'completed' | 'skipped' | 'expired'
+  resolvedAt: string
+}
+
+export interface CampaignOutcome {
+  status: 'active' | 'eliminated' | 'champion' | 'completed'
+  resolvedAt?: string
+  fixtureId?: string
+  opponentNationId?: string
+  spectatorMode: boolean
+}
+
+export interface SetPieceSettings {
+  penaltyOrder: string[]
+  directFreeKickOrder: string[]
+  indirectFreeKickOrder: string[]
+  leftCornerOrder: string[]
+  rightCornerOrder: string[]
+  attackingRoutine: 'near-post' | 'far-post' | 'crowd-keeper' | 'short'
+  defensiveRoutine: 'zonal' | 'mixed' | 'player'
 }
 
 export interface WorldNotification {
@@ -148,6 +175,7 @@ export interface CampaignUIState {
   assistantVoiceEnabled: boolean
   audio: AudioSettings
   agenda: AgendaEvent[]
+  missionResolutions: Record<string, MissionResolution>
   worldNotifications: WorldNotification[]
   assistantMemory: AssistantMemory
   focusMemory: Record<string, string>
@@ -180,6 +208,7 @@ export interface CampaignUIState {
   climateAdaptation: number
   localSupport: number
   recovery: number
+  physicalRisk: number
   hotelId?: string
   decisionLog: Array<{
     key: string
@@ -196,9 +225,24 @@ export interface CampaignUIState {
     passingDirectness: number
     transition: 'hold-shape' | 'balanced' | 'counter'
     marking: 'zonal' | 'mixed' | 'player'
+    passingRisk: number
+    buildUp: 'short' | 'balanced' | 'direct'
+    defensiveBlock: 'low' | 'mid' | 'high'
+    pressingTrap: 'outside' | 'inside' | 'balanced'
+    offsideTrap: boolean
+    goalkeeperDistribution: 'short' | 'wide' | 'long'
+    crossing: 'low' | 'mixed' | 'aerial'
+    dribbling: 'safe' | 'balanced' | 'expressive'
+    creativeFreedom: number
+    timeWasting: number
+    lossTransition: 'regroup' | 'balanced' | 'counter-press'
+    gainTransition: 'hold' | 'balanced' | 'counter'
     roles: Record<string, string>
+    duties: Record<string, 'defend' | 'support' | 'attack'>
+    playerInstructions: Record<string, string[]>
     instructions: string[]
     positions: Record<string, { x: number; y: number; playerId?: string }>
+    setPieces: SetPieceSettings
   }
   matchResults: Record<string, {
     fixtureId: string
@@ -222,6 +266,7 @@ export interface CampaignUIState {
     playedAt: string
   }>
   completed: boolean
+  outcome: CampaignOutcome
 }
 
 export const initialCampaign: CampaignUIState = {
@@ -231,6 +276,7 @@ export const initialCampaign: CampaignUIState = {
   assistantVoiceEnabled: false,
   audio: { master: 72, music: 52, interface: 70, voice: 0, stadium: 68, muted: false, voiceEnabled: false, subtitles: true },
   agenda: [],
+  missionResolutions: {},
   worldNotifications: [],
   assistantMemory: { heardBriefingIds: [], appliedActionIds: [], dismissedActionIds: [], postponedActionIds: [] },
   focusMemory: { hub: 'calendar' },
@@ -256,6 +302,7 @@ export const initialCampaign: CampaignUIState = {
   climateAdaptation: 50,
   localSupport: 50,
   recovery: 72,
+  physicalRisk: 0,
   decisionLog: [],
   tacticSettings: {
     width: 58,
@@ -265,10 +312,29 @@ export const initialCampaign: CampaignUIState = {
     passingDirectness: 46,
     transition: 'balanced',
     marking: 'zonal',
+    passingRisk: 48,
+    buildUp: 'short',
+    defensiveBlock: 'mid',
+    pressingTrap: 'outside',
+    offsideTrap: false,
+    goalkeeperDistribution: 'short',
+    crossing: 'mixed',
+    dribbling: 'balanced',
+    creativeFreedom: 55,
+    timeWasting: 12,
+    lossTransition: 'counter-press',
+    gainTransition: 'balanced',
     roles: {},
+    duties: {},
+    playerInstructions: {},
     instructions: ['play-out', 'work-box', 'counter-press'],
     positions: {},
+    setPieces: {
+      penaltyOrder: [], directFreeKickOrder: [], indirectFreeKickOrder: [], leftCornerOrder: [], rightCornerOrder: [],
+      attackingRoutine: 'near-post', defensiveRoutine: 'mixed',
+    },
   },
   matchResults: {},
   completed: false,
+  outcome: { status: 'active', spectatorMode: false },
 }

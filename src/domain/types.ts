@@ -184,6 +184,8 @@ export interface FormationSlot {
   playerId?: EntityId
   duty: PlayerDuty
   role?: string
+  effectiveRating?: number
+  individualInstructions?: string[]
 }
 
 export interface TacticPlan {
@@ -203,6 +205,8 @@ export interface TacticPlan {
   penaltyTakerIds: EntityId[]
   freeKickTakerIds: EntityId[]
   cornerTakerIds: EntityId[]
+  attackingSetPieceRoutine?: 'near-post' | 'far-post' | 'crowd-keeper' | 'short'
+  defensiveSetPieceRoutine?: 'zonal' | 'mixed' | 'player'
 }
 
 export interface Vector2 {

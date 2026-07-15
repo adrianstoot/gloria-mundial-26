@@ -31,10 +31,13 @@ export interface PositionalPlayer {
 
 export interface TacticalAssessment {
   detectedPosition: Position
+  baseRating: number
   suitability: number
   effectiveRating: number
+  ratingDelta: number
   chemistry: number
   familiarityCost: number
+  breakdown: Array<{ label: string; value: number }>
   penalties: string[]
 }
 
@@ -149,18 +152,57 @@ export function tacticalFitLabel(suitability: number): 'Natural' | 'Competente' 
   return 'Fuera de posición'
 }
 
-export function assessTacticalPlayer(player: PositionalPlayer, x: number, y: number, teamFamiliarity = 60): TacticalAssessment {
+const positionAnchors: Partial<Record<Position, { x: number; y: number }>> = {
+  GK: { x: 50, y: 89 }, LB: { x: 17, y: 72 }, LCB: { x: 38, y: 73 }, CB: { x: 50, y: 73 }, RCB: { x: 62, y: 73 }, RB: { x: 83, y: 72 },
+  LWB: { x: 13, y: 58 }, RWB: { x: 87, y: 58 }, DM: { x: 50, y: 59 }, LCM: { x: 36, y: 49 }, CM: { x: 50, y: 48 }, RCM: { x: 64, y: 49 },
+  LM: { x: 18, y: 42 }, RM: { x: 82, y: 42 }, AM: { x: 50, y: 34 }, LW: { x: 18, y: 22 }, RW: { x: 82, y: 22 }, SS: { x: 50, y: 23 }, ST: { x: 50, y: 13 },
+}
+
+function roleCoordinateModifier(target: Position, role = '', duty: 'defend' | 'support' | 'attack' = 'support') {
+  const lowerRole = role.toLowerCase()
+  let value = 0
+  if (duty === 'attack' && ['ST', 'SS', 'RW', 'LW', 'AM'].includes(target)) value += 1
+  if (duty === 'defend' && ['GK', 'RB', 'RCB', 'CB', 'LCB', 'LB', 'DM'].includes(target)) value += 1
+  if (duty === 'support' && ['DM', 'RCM', 'CM', 'LCM', 'RM', 'LM', 'AM'].includes(target)) value += 1
+  if ((lowerRole.includes('invertido') && ['RB', 'LB', 'RWB', 'LWB', 'RW', 'LW'].includes(target))
+    || (lowerRole.includes('organizador') && ['DM', 'CM', 'RCM', 'LCM', 'AM'].includes(target))
+    || (lowerRole.includes('falso') && ['ST', 'SS', 'AM'].includes(target))) value += 1
+  return Math.min(2, value)
+}
+
+export function assessTacticalPlayer(
+  player: PositionalPlayer,
+  x: number,
+  y: number,
+  teamFamiliarity = 60,
+  role = '',
+  duty: 'defend' | 'support' | 'attack' = 'support',
+): TacticalAssessment {
   const detectedPosition = inferTacticalPosition(x, y)
   const suitability = positionSuitability(player, detectedPosition)
-  const effectiveRating = effectivePositionRating(player, detectedPosition)
+  const baseRating = player.gameRatings.overall ?? 70
+  const anchor = positionAnchors[detectedPosition] ?? { x, y }
+  const distance = Math.hypot((x - anchor.x) * .72, y - anchor.y)
+  const zoneCost = Math.min(8, Math.max(0, Math.round((distance - 8) * .24)))
+  const positionDelta = Math.max(-30, Math.min(1, Math.round((suitability - 92) * .42) - zoneCost))
+  const roleDelta = roleCoordinateModifier(detectedPosition, role, duty)
+  const familiarityDelta = teamFamiliarity >= 80 && suitability >= 90 ? 1 : teamFamiliarity < 45 ? -2 : 0
+  const ratingDelta = Math.max(-30, Math.min(3, positionDelta + roleDelta + familiarityDelta))
+  const effectiveRating = Math.max(20, Math.min(99, baseRating + ratingDelta))
   const familiarityCost = Math.max(0, Math.round((100 - suitability) * (1 - teamFamiliarity / 180)))
-  const chemistry = Math.max(20, Math.min(100, Math.round(suitability * 0.72 + teamFamiliarity * 0.28)))
+  const chemistry = Math.max(20, Math.min(100, Math.round(suitability * 0.65 + teamFamiliarity * 0.28 + roleDelta * 3.5 - zoneCost)))
+  const breakdown = [
+    { label: suitability >= 94 ? 'Posición natural' : suitability >= 80 ? 'Posición secundaria' : 'Adaptación posicional', value: positionDelta + zoneCost },
+    { label: 'Coordenada exacta', value: -zoneCost },
+    { label: `Rol y deber ${duty}`, value: roleDelta },
+    { label: 'Familiaridad colectiva', value: familiarityDelta },
+  ]
   const penalties = [
     ...(suitability < 60 ? ['Fuera de posición'] : suitability < 90 ? ['Necesita adaptación'] : []),
     ...(y < 32 && ['RB','CB','LB','DM'].includes(player.position ?? '') ? ['Riesgo en transición defensiva'] : []),
     ...(y > 63 && ['ST','SS','RW','LW'].includes(player.position ?? '') ? ['Lejos de su zona de influencia'] : []),
   ]
-  return { detectedPosition, suitability, effectiveRating, chemistry, familiarityCost, penalties }
+  return { detectedPosition, baseRating, suitability, effectiveRating, ratingDelta, chemistry, familiarityCost, breakdown, penalties }
 }
 
 export function assessTacticalShape(points: Array<{ x: number; y: number; position: Position }>): TacticalShapeAssessment {

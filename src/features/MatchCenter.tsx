@@ -24,7 +24,7 @@ import { fairPlayDeductionFromEvents } from '../simulation/campaign'
 import { disciplineEventsFromSimulation, suspendedPlayerIds } from './discipline'
 import { injuredPlayerIds, injuryEventsFromSimulation } from './availability'
 import { buildMatchEnvironment } from './matchEnvironment'
-import { inferTacticalPosition } from '../domain/tacticalIntelligence'
+import { assessTacticalPlayer, inferTacticalPosition } from '../domain/tacticalIntelligence'
 import { acceptBroadcastCue, createBroadcastCue, type BroadcastCue } from './broadcastDirector'
 
 type Speed = 0.5 | 1 | 2 | 4 | 8
@@ -74,19 +74,19 @@ function feedType(event: MatchEvent): FeedEvent['type'] {
   return 'info'
 }
 
-function makeTactic(formation: string, mentality: string, settings: CampaignUIState['tacticSettings']): TacticPlan {
+function makeTactic(formation: string, mentality: string, settings: CampaignUIState['tacticSettings'], squad: DomainPlayer[] = [], familiarity = 60): TacticPlan {
   const safeFormation = (['4-3-3','4-2-3-1','4-4-2','4-1-4-1','4-3-1-2','3-4-3','3-4-2-1','3-5-2','5-3-2','5-4-1'].includes(formation) ? formation : '4-3-3') as TacticPlan['formation']
   const safeMentality = ({ Cauta: 'defensive', Equilibrada: 'balanced', Positiva: 'positive', Ofensiva: 'attacking' } as const)[mentality as 'Cauta'|'Equilibrada'|'Positiva'|'Ofensiva'] ?? 'balanced'
   const active = new Set(settings.instructions ?? [])
   const clampSetting = (value: number) => Math.max(0, Math.min(100, Math.round(value)))
   const tactic = createDefaultTactic(safeFormation, {
     mentality: safeMentality,
-    width: clampSetting(settings.width + (active.has('overlap') ? 10 : 0) + (active.has('outside-trap') ? 3 : 0)),
-    tempo: clampSetting(settings.tempo + (active.has('overlap') ? 4 : 0) - (active.has('work-box') ? 5 : 0) - (active.has('play-out') ? 3 : 0)),
-    pressing: clampSetting(settings.pressing + (active.has('counter-press') ? 12 : 0)),
-    defensiveLine: clampSetting(settings.defensiveLine + (active.has('counter-press') ? 5 : 0) + (active.has('outside-trap') ? 4 : 0)),
-    passingDirectness: clampSetting(settings.passingDirectness - (active.has('play-out') ? 12 : 0) - (active.has('work-box') ? 8 : 0)),
-    transition: settings.transition,
+    width: clampSetting(settings.width + (active.has('overlap') ? 10 : 0) + (settings.pressingTrap === 'outside' ? 3 : 0)),
+    tempo: clampSetting(settings.tempo + (settings.creativeFreedom - 50) * .08 - settings.timeWasting * .18 + (active.has('overlap') ? 4 : 0)),
+    pressing: clampSetting(settings.pressing + (settings.lossTransition === 'counter-press' ? 12 : settings.lossTransition === 'regroup' ? -12 : 0) + (settings.defensiveBlock === 'high' ? 6 : settings.defensiveBlock === 'low' ? -8 : 0)),
+    defensiveLine: clampSetting(settings.defensiveLine + (settings.offsideTrap ? 8 : 0) + (settings.defensiveBlock === 'high' ? 8 : settings.defensiveBlock === 'low' ? -12 : 0)),
+    passingDirectness: clampSetting(settings.passingDirectness + (settings.passingRisk - 50) * .2 + (settings.buildUp === 'direct' ? 18 : settings.buildUp === 'short' ? -14 : 0)),
+    transition: settings.gainTransition === 'counter' ? 'counter' : settings.gainTransition === 'hold' ? 'hold-shape' : settings.transition,
     marking: settings.marking,
   })
   return {
@@ -95,11 +95,15 @@ function makeTactic(formation: string, mentality: string, settings: CampaignUISt
       const key = `${safeFormation}:${index}`
       const custom = settings.positions[key]
       const role = settings.roles[key]
-      const duty = role?.includes('Ataque') || role?.includes('profundo') || role?.includes('móvil')
+      const duty = settings.duties[key] ?? (role?.includes('Ataque') || role?.includes('profundo') || role?.includes('móvil')
         ? 'attack'
         : role?.includes('Defensa') || role?.includes('Ancla') || slot.position === 'GK'
           ? 'defend'
-          : slot.duty
+          : slot.duty)
+      const targetX = custom?.x ?? (slot.y * 100)
+      const targetY = custom?.y ?? ((1 - slot.x) * 100)
+      const source = squad.find((player)=>player.id===custom?.playerId)
+      const assessment = source ? assessTacticalPlayer(source, targetX, targetY, familiarity, role, duty) : undefined
       return {
         ...slot,
         x: custom ? (100 - custom.y) / 100 : slot.x,
@@ -108,8 +112,12 @@ function makeTactic(formation: string, mentality: string, settings: CampaignUISt
         playerId: custom?.playerId,
         role,
         duty,
+        effectiveRating: assessment?.effectiveRating,
+        individualInstructions: settings.playerInstructions[key] ?? [],
       }
     }),
+    attackingSetPieceRoutine: settings.setPieces.attackingRoutine,
+    defensiveSetPieceRoutine: settings.setPieces.defensiveRoutine,
   }
 }
 
@@ -216,11 +224,11 @@ export function MatchCenter() {
   const playerMap = useMemo(() => new Map([...home.players, ...away.players].map((player) => [player.id, player])), [away.players, home.players])
   const initEngine = useCallback(() => {
     const userTactic = {
-      ...makeTactic(campaign.tactic, campaign.mentality, campaign.tacticSettings),
+      ...makeTactic(campaign.tactic, campaign.mentality, campaign.tacticSettings, userSquad, campaign.tacticalFamiliarity),
       captainId: campaign.captainId,
-      penaltyTakerIds: campaign.penaltyTakerId ? [campaign.penaltyTakerId] : [],
-      cornerTakerIds: campaign.cornerTakerId ? [campaign.cornerTakerId] : [],
-      freeKickTakerIds: campaign.freeKickTakerId ? [campaign.freeKickTakerId] : [],
+      penaltyTakerIds: [...new Set([campaign.penaltyTakerId, ...campaign.tacticSettings.setPieces.penaltyOrder].filter((id): id is string => Boolean(id)))],
+      cornerTakerIds: [...new Set([campaign.cornerTakerId, ...campaign.tacticSettings.setPieces.leftCornerOrder, ...campaign.tacticSettings.setPieces.rightCornerOrder].filter((id): id is string => Boolean(id)))],
+      freeKickTakerIds: [...new Set([campaign.freeKickTakerId, ...campaign.tacticSettings.setPieces.directFreeKickOrder, ...campaign.tacticSettings.setPieces.indirectFreeKickOrder].filter((id): id is string => Boolean(id)))],
     }
     const homeTactic = home.id === controlled.id ? userTactic : aiTactic(home, away.strength)
     const awayTactic = away.id === controlled.id ? userTactic : aiTactic(away, home.strength)
@@ -342,7 +350,22 @@ export function MatchCenter() {
         fixtures: current.customFixtures ?? tournamentData.fixtures,
       }
       const nextProgress = deriveCampaignProgress(customData, matchResults, { controlledNationId: current.nationId })
-      return { ...current, matchResults, completed: nextProgress.completed }
+      const controlledMatch = home.id === current.nationId || away.id === current.nationId
+      const opponentNationId = home.id === current.nationId ? away.id : away.id === current.nationId ? home.id : undefined
+      const outcome: CampaignUIState['outcome'] = nextProgress.controlledNationEliminated && current.outcome.status === 'active'
+        ? { status: 'eliminated', resolvedAt: current.date, fixtureId: fixture.id, opponentNationId, spectatorMode: false }
+        : nextProgress.completed && nextProgress.championNationId === current.nationId
+          ? { status: 'champion', resolvedAt: current.date, fixtureId: fixture.id, opponentNationId, spectatorMode: false }
+          : nextProgress.completed && current.outcome.status === 'active'
+            ? { status: 'completed', resolvedAt: current.date, fixtureId: fixture.id, opponentNationId, spectatorMode: false }
+            : current.outcome
+      return {
+        ...current,
+        matchResults,
+        completed: nextProgress.completed,
+        outcome,
+        physicalRisk: controlledMatch ? 0 : current.physicalRisk,
+      }
     })
   }, [away.id, fixture, home.id, updateCampaign])
 
@@ -428,7 +451,7 @@ export function MatchCenter() {
       defensiveLine: Math.max(0, Math.min(100, campaign.tacticSettings.defensiveLine + modifiers.defensiveLine)),
     }
     const tactic = {
-      ...makeTactic(campaign.tactic, modifiers.mentality, settings),
+      ...makeTactic(campaign.tactic, modifiers.mentality, settings, userSquad, campaign.tacticalFamiliarity),
       captainId: campaign.captainId,
       penaltyTakerIds: campaign.penaltyTakerId ? [campaign.penaltyTakerId] : [],
       cornerTakerIds: campaign.cornerTakerId ? [campaign.cornerTakerId] : [],
@@ -514,7 +537,9 @@ function MatchCanvas({snapshot,homeColor,homeSecondary,awayColor,awaySecondary,r
         ball:{...target.ball,location:{x:display.ball.location.x+(target.ball.location.x-display.ball.location.x)*ballBlend,y:display.ball.location.y+(target.ball.location.y-display.ball.location.y)*ballBlend}},
         players:target.players.map(next=>{const player=displayMap.get(next.playerId)??next;return {...next,location:{x:player.location.x+(next.location.x-player.location.x)*playerBlend,y:player.location.y+(next.location.y-player.location.y)*playerBlend}}}),
       }
-      const s=displayRef.current;const w=canvas.clientWidth,h=canvas.clientHeight
+      const s=displayRef.current;const screenW=canvas.clientWidth,screenH=canvas.clientHeight
+      ctx.save();ctx.translate(screenW,0);ctx.rotate(Math.PI/2)
+      const w=screenH,h=screenW
       const zoom=camera==='Dinámica'&&!reducedMotion?1.28:1
       const focusX=zoom===1?52.5:Math.max(41,Math.min(64,s.ball.location.x))
       const focusY=zoom===1?34:Math.max(27,Math.min(41,s.ball.location.y))
@@ -541,11 +566,11 @@ function MatchCanvas({snapshot,homeColor,homeSecondary,awayColor,awaySecondary,r
         ctx.beginPath();ctx.moveTo(marker*.95,0);ctx.lineTo(marker*.4,-marker*.72);ctx.lineTo(-marker*.42,-marker*.86);ctx.lineTo(-marker*.78,-marker*.42);ctx.lineTo(-marker*.72,marker*.42);ctx.lineTo(-marker*.42,marker*.86);ctx.lineTo(marker*.4,marker*.72);ctx.closePath();ctx.fillStyle=primary;ctx.fill();ctx.shadowBlur=0
         ctx.beginPath();ctx.moveTo(marker*.34,-marker*.72);ctx.lineTo(-marker*.55,-marker*.8);ctx.lineTo(-marker*.55,marker*.8);ctx.lineTo(marker*.34,marker*.72);ctx.closePath();ctx.fillStyle=secondary;ctx.globalAlpha=.78;ctx.fill();ctx.globalAlpha=1
         ctx.strokeStyle='rgba(255,255,255,.86)';ctx.lineWidth=1.35;ctx.stroke();ctx.restore()
-        ctx.font='800 9px Archivo,system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=getContrast(primary);ctx.fillText(String(player.shirtNumber),x,y+.3)
+        ctx.save();ctx.translate(x,y);ctx.rotate(-Math.PI/2);ctx.font='800 9px Archivo,system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=getContrast(primary);ctx.fillText(String(player.shirtNumber),0,.3);ctx.restore()
         if(player.redCard){ctx.fillStyle='#ff3959';ctx.fillRect(x+7,y-12,5,8)}else if(player.yellowCards){ctx.fillStyle='#ffd63d';ctx.fillRect(x+7,y-12,5,8)}
       })
       const bx=px(s.ball.location.x),by=py(s.ball.location.y);ctx.beginPath();ctx.ellipse(bx+2,by+4,4.8,2.2,0,0,Math.PI*2);ctx.fillStyle='rgba(0,0,0,.28)';ctx.fill();ctx.shadowColor='#fff';ctx.shadowBlur=10;ctx.beginPath();ctx.arc(bx,by-s.ball.height*2.2,4.2+s.ball.height*.35,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();ctx.strokeStyle='#142131';ctx.stroke();ctx.shadowBlur=0
-      const rx=px(s.referee.x),ry=py(s.referee.y);ctx.beginPath();ctx.arc(rx,ry,6,0,Math.PI*2);ctx.fillStyle='#ee4cff';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1;ctx.stroke()
+      const rx=px(s.referee.x),ry=py(s.referee.y);ctx.beginPath();ctx.arc(rx,ry,6,0,Math.PI*2);ctx.fillStyle='#ee4cff';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1;ctx.stroke();ctx.restore()
       frame=requestAnimationFrame(draw)
     }
     frame=requestAnimationFrame(draw);return()=>{cancelAnimationFrame(frame);window.removeEventListener('resize',resize)}

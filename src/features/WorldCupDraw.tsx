@@ -438,6 +438,7 @@ export function WorldCupDraw() {
       prologueComplete: true,
       unlockedModules: ['squad', 'hotel', 'training', 'tactics', 'press', 'hub'],
       squadConfirmed: true,
+      hotelId: 'dallas-central',
     })
 
     navigate('/juego')

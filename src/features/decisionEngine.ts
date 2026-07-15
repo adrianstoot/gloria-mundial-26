@@ -1,5 +1,5 @@
-import type { CampaignUIState } from './ui-model'
-import type { MetricEffects, TeamMetric } from './concentrationData'
+import type { CampaignUIState, TeamMetric } from './ui-model'
+import type { MetricEffects } from './concentrationData'
 import type { Nation } from '../domain'
 import type { MatchEnvironment } from './matchEnvironment'
 
@@ -11,8 +11,19 @@ export interface CampDecision {
   madeAt: string
 }
 
-const boundedMetrics: TeamMetric[] = ['morale', 'federation', 'cohesion', 'fatigue', 'pressure', 'tacticalFamiliarity', 'climateAdaptation', 'localSupport', 'recovery']
+const boundedMetrics: TeamMetric[] = ['morale', 'federation', 'cohesion', 'fatigue', 'pressure', 'tacticalFamiliarity', 'climateAdaptation', 'localSupport', 'recovery', 'physicalRisk']
 const clamp = (value: number) => Math.max(0, Math.min(100, Math.round(value)))
+
+const agendaTypesForDecision: Partial<Record<CampDecision['type'], CampaignUIState['agenda'][number]['type'][]>> = {
+  training: ['training'],
+  leisure: ['leisure'],
+  press: ['press'],
+  recovery: ['recovery', 'medical'],
+  hotel: ['travel'],
+  talk: ['meeting'],
+  leadership: ['meeting'],
+  media: ['press'],
+}
 
 export function applyCampDecision(campaign: CampaignUIState, decision: CampDecision): CampaignUIState {
   if (decision.type === 'hotel' && campaign.hotelId) return campaign
@@ -20,9 +31,17 @@ export function applyCampDecision(campaign: CampaignUIState, decision: CampDecis
   if (previous) return campaign
   const next = { ...campaign, decisionLog: [...campaign.decisionLog, decision] }
   for (const metric of boundedMetrics) {
-    const delta = decision.effects[metric]
+    const delta = (decision.effects as Partial<Record<TeamMetric, number>>)[metric]
     if (delta === undefined) continue
     next[metric] = clamp(next[metric] + delta)
+  }
+  const agendaTypes = agendaTypesForDecision[decision.type] ?? []
+  const mission = campaign.agenda.find((item) => item.date === campaign.date && item.status === 'pending' && agendaTypes.includes(item.type))
+  if (mission && !next.missionResolutions[mission.id]) {
+    next.missionResolutions = {
+      ...next.missionResolutions,
+      [mission.id]: { status: 'completed', resolvedAt: campaign.date },
+    }
   }
   if (decision.type === 'hotel') next.hotelId = decision.key.replace(/^hotel:/, '')
   return next
@@ -44,12 +63,13 @@ export function applyCampaignContext(nation: Nation, campaign: CampaignUIState, 
   const environmentCondition = environment?.conditionDelta ?? 0
   const environmentDecision = environment?.decisionDelta ?? 0
   const environmentMorale = environment?.moraleDelta ?? 0
+  const riskCost = campaign.physicalRisk * 0.22
   return {
     ...nation,
     players: nation.players.map((player) => ({
       ...player,
-      condition: clamp(92 + campaign.recovery * 0.08 - campaign.fatigue * 0.16 - climateCost + environmentCondition),
-      fatigue: clamp(campaign.fatigue + climateCost + environmentFatigue),
+      condition: clamp(92 + campaign.recovery * 0.08 - campaign.fatigue * 0.16 - climateCost - riskCost * 0.45 + environmentCondition),
+      fatigue: clamp(campaign.fatigue + climateCost + riskCost + environmentFatigue),
       morale: clamp(campaign.morale + supportBoost + environmentMorale),
       sharpness: clamp(player.sharpness + familiarityBoost),
       gameRatings: {

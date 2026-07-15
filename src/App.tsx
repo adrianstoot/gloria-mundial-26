@@ -35,6 +35,7 @@ interface GameContextValue {
   updateCampaign: (patch: Partial<CampaignUIState> | ((state: CampaignUIState) => CampaignUIState)) => void
   startNew: () => void
   clearSave: () => void
+  restartTournament: () => void
   continueDay: () => Promise<void>
   exportSave: () => void
   importSave: (file: File) => Promise<void>
@@ -57,6 +58,7 @@ export function hydrateCampaign(value: Partial<CampaignUIState> = {}): CampaignU
     assistantVoiceEnabled: false,
     audio: { ...initialCampaign.audio, ...value.audio, voice: 0, voiceEnabled: false, subtitles: true },
     agenda: value.agenda ?? [],
+    missionResolutions: value.missionResolutions ?? {},
     worldNotifications: value.worldNotifications ?? [],
     assistantMemory: { ...initialCampaign.assistantMemory, ...value.assistantMemory },
     focusMemory: { ...initialCampaign.focusMemory, ...value.focusMemory },
@@ -73,13 +75,18 @@ export function hydrateCampaign(value: Partial<CampaignUIState> = {}): CampaignU
     trainingPlan: initialCampaign.trainingPlan.map((session, index) => value.trainingPlan?.[index] ?? session),
     pressAnswers: value.pressAnswers ?? {},
     decisionLog: value.decisionLog ?? [],
+    physicalRisk: value.physicalRisk ?? 0,
+    outcome: { ...initialCampaign.outcome, ...value.outcome },
     matchResults: value.matchResults ?? {},
     tacticSettings: {
       ...initialCampaign.tacticSettings,
       ...value.tacticSettings,
       roles: value.tacticSettings?.roles ?? {},
+      duties: value.tacticSettings?.duties ?? {},
+      playerInstructions: value.tacticSettings?.playerInstructions ?? {},
       instructions: value.tacticSettings?.instructions ?? initialCampaign.tacticSettings.instructions,
       positions: value.tacticSettings?.positions ?? {},
+      setPieces: { ...initialCampaign.tacticSettings.setPieces, ...value.tacticSettings?.setPieces },
     },
   }
   const priorAgendaStatus = new Map((value.agenda ?? []).map((item) => [item.id, item.status]))
@@ -194,6 +201,8 @@ function GameProvider({ children }: { children: ReactNode }) {
         || changed.hotelId !== current.hotelId
         || changed.fatigue !== current.fatigue
         || changed.pressure !== current.pressure
+        || changed.physicalRisk !== current.physicalRisk
+        || Object.keys(changed.missionResolutions).length !== Object.keys(current.missionResolutions).length
         || changed.decisionLog.length !== current.decisionLog.length
         || Object.keys(changed.pressAnswers).length !== Object.keys(current.pressAnswers).length
       const next = shouldRefresh
@@ -220,6 +229,29 @@ function GameProvider({ children }: { children: ReactNode }) {
     campaignRef.current = next
     setCampaign(next)
     setHasSave(false)
+  }, [])
+
+  const restartTournament = useCallback(() => {
+    const current = campaignRef.current
+    const next = hydrateCampaign({
+      manager: current.manager,
+      coachAppliedId: current.coachAppliedId,
+      nationId: current.nationId,
+      difficulty: current.difficulty,
+      squadIds: current.squadIds,
+      squadConfirmed: current.squadIds.length === 26,
+      shirtNumbers: current.shirtNumbers,
+      customFixtures: current.customFixtures,
+      customNations: current.customNations,
+      tutorialComplete: true,
+      prologueComplete: true,
+      unlockedModules: ['squad', 'hotel', 'training', 'tactics', 'press', 'hub'],
+      hotelId: 'dallas-central',
+    })
+    campaignRef.current = next
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+    setCampaign(next)
+    setHasSave(true)
   }, [])
 
   const exportSave = useCallback(() => {
@@ -260,7 +292,23 @@ function GameProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const continueDay = useCallback(async () => {
-    const base = campaignRef.current
+    const stored = campaignRef.current
+    const skipped = stored.agenda.filter((item) => item.date === stored.date && item.status === 'pending' && item.type !== 'match')
+    const resolutions = { ...stored.missionResolutions }
+    let base = { ...stored }
+    for (const mission of skipped) {
+      if (resolutions[mission.id]) continue
+      resolutions[mission.id] = { status: 'skipped', resolvedAt: stored.date }
+      const applyMetric = (metric: keyof typeof mission.skipEffects, delta: number) => {
+        const current = base[metric]
+        if (typeof current !== 'number') return
+        base = { ...base, [metric]: Math.max(0, Math.min(100, Math.round(current + delta))) }
+      }
+      for (const [metric, delta] of Object.entries(mission.skipEffects)) {
+        applyMetric(metric as keyof typeof mission.skipEffects, delta ?? 0)
+      }
+    }
+    base = { ...base, missionResolutions: resolutions }
     if (base.completed) return
     const date = new Date(`${base.date}T12:00:00`)
     date.setDate(date.getDate() + 1)
@@ -295,11 +343,18 @@ function GameProvider({ children }: { children: ReactNode }) {
     const progress = deriveCampaignProgress(customData, results, { controlledNationId: base.nationId })
     updateCampaign((current) => {
       if (current.date !== base.date) return current
-      return { ...current, date: nextDate, matchResults: results, completed: progress.completed }
+      const outcome: CampaignUIState['outcome'] = progress.controlledNationEliminated && current.outcome.status === 'active'
+        ? { status: 'eliminated', resolvedAt: nextDate, spectatorMode: false }
+        : progress.completed && progress.championNationId === current.nationId
+          ? { status: 'champion', resolvedAt: nextDate, spectatorMode: false }
+          : progress.completed && current.outcome.status === 'active'
+            ? { status: 'completed', resolvedAt: nextDate, spectatorMode: false }
+            : current.outcome
+      return { ...current, ...base, date: nextDate, matchResults: results, completed: progress.completed, outcome }
     })
   }, [updateCampaign])
 
-  return <GameContext.Provider value={{ campaign, hasSave, hasLegacySave, updateCampaign, startNew, clearSave, continueDay, exportSave, importSave, exportLegacySave, discardLegacySave }}>{children}</GameContext.Provider>
+  return <GameContext.Provider value={{ campaign, hasSave, hasLegacySave, updateCampaign, startNew, clearSave, restartTournament, continueDay, exportSave, importSave, exportLegacySave, discardLegacySave }}>{children}</GameContext.Provider>
 }
 
 export function useGame() {

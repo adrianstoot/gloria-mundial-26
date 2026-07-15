@@ -30,7 +30,7 @@ function event(
   title: string,
   summary: string,
   route: string,
-  options: Partial<Pick<AgendaEvent, 'priority' | 'mandatory' | 'durationMinutes' | 'effects' | 'status'>> = {},
+  options: Partial<Pick<AgendaEvent, 'priority' | 'mandatory' | 'durationMinutes' | 'effects' | 'status' | 'recommendedAction' | 'skipEffects' | 'expiresAt'>> = {},
 ): AgendaEvent {
   return {
     id: `${date}-${time}-${type}-${title.toLocaleLowerCase('es-ES').replace(/[^a-z0-9]+/g, '-').slice(0, 24)}`,
@@ -45,6 +45,9 @@ function event(
     durationMinutes: options.durationMinutes ?? 60,
     effects: options.effects ?? [],
     status: options.status ?? 'pending',
+    recommendedAction: options.recommendedAction ?? 'Revisar recomendación',
+    skipEffects: options.skipEffects ?? {},
+    expiresAt: options.expiresAt ?? `${date}T23:59:59`,
   }
 }
 
@@ -64,15 +67,27 @@ export function generateAgenda(campaign: CampaignUIState): AgendaEvent[] {
     const leisureDone = campaign.decisionLog.some((item) => item.type === 'leisure' && item.madeAt === date)
     const pressDone = campaign.decisionLog.filter((item) => item.type === 'press' && item.madeAt === date).length >= 3
     const fixture = controlledFixtures.find((item) => item.date.slice(0, 10) === date)
-    if (fixture) events.push(event(date, fixture.date.slice(11, 16) || '20:00', 'match', `Partido ${fixture.matchNumber} · ${fixture.stage === 'GROUP' ? `Grupo ${fixture.group}` : 'Eliminatoria'}`, 'El partido está listo. Entra al estadio para elegir el ritmo de simulación y dirigir al equipo.', `/partido?fixture=${fixture.id}`, { priority: 'critical', durationMinutes: 120, effects: ['Resultado', 'Clasificación', 'Fatiga'] }))
+    if (fixture) events.push(event(date, fixture.date.slice(11, 16) || '20:00', 'match', `Partido ${fixture.matchNumber} · ${fixture.stage === 'GROUP' ? `Grupo ${fixture.group}` : 'Eliminatoria'}`, 'El partido está listo. Entra al estadio para elegir el ritmo de simulación y dirigir al equipo.', `/partido?fixture=${fixture.id}`, { priority: 'critical', durationMinutes: 120, effects: ['Resultado', 'Clasificación', 'Fatiga'], recommendedAction: 'Jugar partido' }))
     if (offset === 0 && !campaign.squadConfirmed) events.push(event(date, '09:00', 'federation', 'Revisar la lista de 26', 'Puedes mantener la propuesta inicial o ajustar la convocatoria antes del debut.', '/juego/convocatoria', { priority: 'high', durationMinutes: 45, effects: ['Equilibrio', 'Jerarquía'] }))
     if (offset === 0 && !campaign.hotelId) events.push(event(date, '11:00', 'travel', 'Elegir la base del Mundial', 'Privacidad, viajes y recuperación cambiarán el contexto de cada partido.', '/juego/concentracion?seccion=hotel', { priority: 'high', durationMinutes: 45, effects: ['Recuperación', 'Apoyo local'] }))
-    if (!trainingDone) events.push(event(date, offset % 3 === 0 ? '10:30' : '11:15', 'training', offset % 3 === 1 ? 'Automatismos ofensivos' : offset % 3 === 2 ? 'Bloque y presión' : 'Activación y cohesión', 'Elige si quieres trabajar esta sesión. Si la omites, el estado del equipo no cambia.', '/juego/concentracion?seccion=training', { priority: offset === 0 ? 'high' : 'normal', durationMinutes: 75, effects: ['Fatiga', 'Familiaridad'] }))
-    if (offset % 2 === 0) events.push(event(date, '16:30', 'medical', 'Control de disponibilidad', 'El equipo médico revisará fatiga, golpes y riesgo muscular.', '/juego/medico', { durationMinutes: 35, effects: ['Condición', 'Riesgo'] }))
-    if (offset % 3 === 1 && !pressDone) events.push(event(date, '18:00', 'press', 'Ventana de medios', 'La presión pública puede trasladarse al vestuario.', '/juego/prensa', { priority: 'normal', durationMinutes: 30, effects: ['Presión', 'Confianza'] }))
+    if (!trainingDone) events.push(event(date, offset % 3 === 0 ? '10:30' : '11:15', 'training', offset % 3 === 1 ? 'Automatismos ofensivos' : offset % 3 === 2 ? 'Bloque y presión' : 'Activación y cohesión', 'Elige si quieres trabajar esta sesión. Omitirla solo renuncia a su beneficio.', '/juego/concentracion?seccion=training', { priority: offset === 0 ? 'high' : 'normal', durationMinutes: 75, effects: ['Fatiga', 'Familiaridad'], recommendedAction: 'Aplicar sesión recomendada' }))
+    if (offset % 2 === 0) events.push(event(date, '16:30', 'medical', 'Control de disponibilidad', 'El equipo médico revisará fatiga, golpes y riesgo muscular.', '/juego/medico', { durationMinutes: 35, effects: ['Condición', 'Riesgo'], recommendedAction: 'Revisar disponibilidad', skipEffects: { physicalRisk: 4 } }))
+    if (offset % 3 === 1 && !pressDone) events.push(event(date, '18:00', 'press', 'Ventana de medios', 'La presión pública puede trasladarse al vestuario.', '/juego/prensa', { priority: 'normal', durationMinutes: 30, effects: ['Presión', 'Confianza'], recommendedAction: 'Atender a los medios', skipEffects: { pressure: 3, federation: -1 } }))
     if (offset % 3 === 2 && !leisureDone) events.push(event(date, '18:30', 'leisure', 'Tiempo del grupo', 'Una decisión corta sobre descanso, familia o convivencia.', '/juego/concentracion?seccion=leisure', { durationMinutes: 90, effects: ['Moral', 'Cohesión'] }))
   }
-  return events.sort((left, right) => left.date.localeCompare(right.date) || left.time.localeCompare(right.time))
+  const priority = { critical: 0, high: 1, normal: 2, low: 3 }
+  const byDay = new Map<string, AgendaEvent[]>()
+  events.forEach((item) => byDay.set(item.date, [...(byDay.get(item.date) ?? []), item]))
+  return [...byDay.values()].flatMap((items) => items
+    .sort((left, right) => priority[left.priority] - priority[right.priority] || left.time.localeCompare(right.time))
+    .slice(0, 4)
+    .map((item) => {
+      const resolution = campaign.missionResolutions[item.id]
+      const status: AgendaEvent['status'] = resolution?.status === 'completed' ? 'completed' : resolution ? 'expired' : item.status
+      return { ...item, status }
+    })
+    .sort((left, right) => left.time.localeCompare(right.time)))
+    .sort((left, right) => left.date.localeCompare(right.date) || left.time.localeCompare(right.time))
 }
 
 export function generateWorldNotifications(campaign: CampaignUIState): WorldNotification[] {

@@ -25,6 +25,27 @@ function EffectChips({ effects, limit }: { effects: MetricEffects; limit?: numbe
   ))}</div>
 }
 
+function TrainingDiagram({ id }: { id: string }) {
+  const seed = [...id].reduce((sum, character) => sum + character.charCodeAt(0), 0)
+  const points = Array.from({ length: 8 }, (_, index) => ({ x: 12 + ((seed + index * 19) % 76), y: 16 + ((seed * 3 + index * 23) % 66) }))
+  return <span className="training-diagram" aria-hidden="true"><svg viewBox="0 0 100 72" preserveAspectRatio="none">
+    <rect x="1" y="1" width="98" height="70" rx="2"/><path d="M50 1v70M1 36h98"/><circle cx="50" cy="36" r="10"/>
+    {points.slice(0,4).map((point,index)=><circle key={`p-${index}`} cx={point.x} cy={point.y} r="2.4"/>)}
+    {points.slice(4).map((point,index)=><path key={`c-${index}`} className="cone" d={`M${point.x-2} ${point.y+2} L${point.x} ${point.y-3} L${point.x+2} ${point.y+2} Z`}/>)}
+    {points.slice(0,3).map((point,index)=>{const next=points[index+1]!;return <path key={`r-${index}`} className="route" d={`M${point.x} ${point.y} Q50 ${12+index*20} ${next.x} ${next.y}`}/>})}
+  </svg></span>
+}
+
+const leisureVisual = (id: string) => {
+  if (id.includes('family')) return 'assets/team-leisure-v2.webp'
+  if (id.includes('dinner')) return 'assets/hotel-urban-v3.webp'
+  if (id.includes('community')) return 'assets/fan-zone-v2.webp'
+  if (id.includes('recovery')) return 'assets/recovery-suite-v2.webp'
+  if (id.includes('video')) return 'assets/tactics-room-2026.png'
+  if (id.includes('walk')) return 'assets/hotel-arrival-2026.png'
+  return 'assets/console-locker-4k.webp'
+}
+
 export function ConcentrationHub() {
   const { campaign, updateCampaign } = useGame()
   const [searchParams] = useSearchParams()
@@ -104,9 +125,10 @@ export function ConcentrationHub() {
     {tab === 'training' && <div className="camp-section camp-two-columns">
       <Panel eyebrow={`SESIÓN PRINCIPAL · ${campaign.date}`} title={todayTraining ? `Plan confirmado: ${todayTraining.label}` : 'Elige el ejercicio del día'}>
         <div className="cinematic-option-nav"><span>EJERCICIOS {trainingPage * 3 + 1}–{Math.min(trainingExercises.length, trainingPage * 3 + 3)} DE {trainingExercises.length}</span><div><button disabled={trainingPage === 0} onClick={() => setTrainingPage((value) => value - 1)}><ChevronLeft /></button><button disabled={(trainingPage + 1) * 3 >= trainingExercises.length} onClick={() => setTrainingPage((value) => value + 1)}><ChevronRight /></button></div></div>
-        <div className="exercise-grid">{trainingOptions.map((exercise) => <button key={exercise.id} disabled={Boolean(todayTraining)} className={todayTraining?.label === exercise.name ? 'is-selected' : ''} onClick={() => decide('training', trainingKey, exercise.name, exercise.effects)}>
+        <div className="exercise-grid">{trainingOptions.map((exercise, index) => <button key={exercise.id} disabled={Boolean(todayTraining)} className={`${todayTraining?.label === exercise.name ? 'is-selected' : ''} ${!todayTraining && index === 0 ? 'is-recommended' : ''}`} onClick={() => decide('training', trainingKey, exercise.name, exercise.effects)}>
+          <TrainingDiagram id={exercise.id}/>
           <span className={`exercise-icon exercise-icon--${exercise.category}`}>{exercise.category === 'recovery' ? <Heart /> : exercise.category === 'physical' ? <Activity /> : exercise.category === 'tactical' ? <Brain /> : exercise.category === 'set-pieces' ? <Zap /> : <Dumbbell />}</span>
-          <span><small>{exercise.category.toUpperCase()} · INTENSIDAD {exercise.intensity.toUpperCase()}</small><b>{exercise.name}</b><p>{exercise.description}</p><em><Clock3 /> {exercise.duration}</em><EffectChips effects={exercise.effects} /></span>
+          <span><small>{exercise.category.toUpperCase()} · INTENSIDAD {exercise.intensity.toUpperCase()}</small><b>{exercise.name}</b>{!todayTraining && index===0&&<strong>PLAN RECOMENDADO</strong>}<p>{exercise.description}</p><em><Clock3 /> {exercise.duration}</em><EffectChips effects={exercise.effects} /></span>
           {todayTraining?.label === exercise.name && <Check />}
         </button>)}</div>
       </Panel>
@@ -121,7 +143,7 @@ export function ConcentrationHub() {
           <strong>{campaign.localSupport}<small>/100 APOYO</small></strong>
         </div>
         <div className="cinematic-option-nav"><span>ACTIVIDADES {leisurePage * 3 + 1}–{Math.min(leisureActivities.length, leisurePage * 3 + 3)} DE {leisureActivities.length}</span><div><button disabled={leisurePage === 0} onClick={() => setLeisurePage((value) => value - 1)}><ChevronLeft /></button><button disabled={(leisurePage + 1) * 3 >= leisureActivities.length} onClick={() => setLeisurePage((value) => value + 1)}><ChevronRight /></button></div></div>
-        <div className="leisure-grid">{leisureOptions.map((activity) => <button key={activity.id} disabled={Boolean(todayLeisure)} className={todayLeisure?.label === activity.name ? 'is-selected' : ''} onClick={() => decide('leisure', leisureKey, activity.name, activity.effects)}>
+        <div className="leisure-grid">{leisureOptions.map((activity) => <button key={activity.id} style={{'--activity-visual':`url(${import.meta.env.BASE_URL}${leisureVisual(activity.id)})`} as React.CSSProperties} disabled={Boolean(todayLeisure)} className={todayLeisure?.label === activity.name ? 'is-selected' : ''} onClick={() => decide('leisure', leisureKey, activity.name, activity.effects)}>
           <span className="leisure-icon">{activity.id.includes('family') ? <Users /> : activity.id.includes('recovery') || activity.id.includes('rest') ? <Heart /> : activity.id.includes('video') ? <Brain /> : <Sparkles />}</span>
           <span><b>{activity.name}</b><p>{activity.description}</p><small><Clock3 /> {activity.duration}</small><EffectChips effects={activity.effects} /></span>{todayLeisure?.label === activity.name && <Check />}
         </button>)}</div>

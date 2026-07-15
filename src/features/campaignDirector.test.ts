@@ -13,7 +13,9 @@ describe('CampaignV3 director', () => {
     expect(new Set(first.map((item) => item.id)).size).toBe(first.length)
     expect(first).toEqual([...first].sort((left, right) => left.date.localeCompare(right.date) || left.time.localeCompare(right.time)))
     expect(first.filter((item) => item.type !== 'match').every((item) => item.mandatory === false)).toBe(true)
-    expect(first.some((item) => item.type === 'training' && item.summary.includes('estado del equipo no cambia'))).toBe(true)
+    expect(first.some((item) => item.type === 'training' && item.summary.includes('renuncia a su beneficio') && item.mandatory === false)).toBe(true)
+    expect(first.some((item) => item.type === 'press' && item.skipEffects.pressure === 3 && item.skipEffects.federation === -1)).toBe(true)
+    expect(first.some((item) => item.type === 'medical' && item.skipEffects.physicalRisk === 4)).toBe(true)
   })
 
   it('guides the player to the next optional daily mission without blocking the calendar', () => {

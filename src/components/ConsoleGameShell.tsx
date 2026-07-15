@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { Bell, ChevronRight, Settings, Sparkles, Volume2, VolumeX, X } from 'lucide-react'
+import { Bell, ChevronRight, Download, Eye, RotateCcw, Settings, Sparkles, Trash2, Trophy, UserRoundPlus, Volume2, VolumeX, X } from 'lucide-react'
 import { Brand } from './Brand'
 import { Flag } from './Flag'
 import { useGame } from '../App'
@@ -84,13 +84,14 @@ function useConsoleNavigation(onBack: () => void) {
 export function ConsoleGameShell() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { campaign, updateCampaign, continueDay } = useGame()
+  const { campaign, updateCampaign, continueDay, exportSave, restartTournament, startNew, clearSave } = useGame()
   const rootRef = useRef<HTMLDivElement>(null)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [assistantOpen, setAssistantOpen] = useState(false)
   const [assistantDetail, setAssistantDetail] = useState(false)
   const [notificationsOpen, setNotificationsOpen] = useState(false)
   const [advancing, setAdvancing] = useState(false)
+  const [confirmAction, setConfirmAction] = useState<'restart' | 'new' | 'delete'>()
   const nation = uiNations.find((item) => item.id === campaign.nationId)
   const progress = useMemo(() => {
     const customData = {
@@ -180,6 +181,15 @@ export function ConsoleGameShell() {
   }
 
   const updateAudio = (key: keyof typeof campaign.audio, value: number | boolean) => updateCampaign((current) => ({ ...current, audio: { ...current.audio, [key]: value, voice: 0, voiceEnabled: false }, assistantVoiceEnabled: false }))
+  const runCampaignAction = (action: 'restart' | 'new' | 'delete') => {
+    if (confirmAction !== action) { setConfirmAction(action); return }
+    setConfirmAction(undefined)
+    setSettingsOpen(false)
+    if (action === 'restart') { restartTournament(); navigate('/juego'); return }
+    if (action === 'delete') clearSave()
+    else startNew()
+    navigate('/crear-seleccionador')
+  }
   const postponeBriefing = () => {
     if (briefing.urgency === 'critical') return
     updateCampaign((current) => ({ ...current, assistantMemory: { ...current.assistantMemory, postponedActionIds: [...new Set([briefing.id, ...current.assistantMemory.postponedActionIds])].slice(0, 80) } }))
@@ -220,6 +230,8 @@ export function ConsoleGameShell() {
 
     {notificationsOpen && <section className="console-notification-scene"><header><small>CENTRO DE NOTIFICACIONES</small><h2>Lo que cambia hoy</h2><button onClick={() => setNotificationsOpen(false)}><X /></button></header><div>{campaign.worldNotifications.map((item) => <button key={item.id} className={`is-${item.urgency}`} onClick={() => navigate(item.route)}><span>{item.category}</span><b>{item.headline}</b><p>{item.summary}</p><ChevronRight /></button>)}</div></section>}
 
-    {settingsOpen && <section className="console-settings-scene"><header><small>EXPERIENCIA v3</small><h2>Sonido y accesibilidad</h2><button onClick={() => setSettingsOpen(false)}><X /></button></header><div className="console-settings-grid">{(['master','music','interface','stadium'] as const).map((key) => <label key={key}><span>{key === 'master' ? 'Volumen maestro' : key === 'music' ? 'Música' : key === 'interface' ? 'Interfaz' : 'Estadio'}<b>{campaign.audio[key]}%</b></span><input type="range" min="0" max="100" value={campaign.audio[key]} onChange={(event) => updateAudio(key, Number(event.target.value))}/></label>)}<button className={campaign.audio.muted ? 'is-active' : ''} onClick={() => updateAudio('muted', !campaign.audio.muted)}>{campaign.audio.muted ? <VolumeX/> : <Volume2/>}<b>{campaign.audio.muted ? 'Activar todo' : 'Silenciar todo'}</b></button><div className="console-settings-note"><Sparkles/><span><b>Álex funciona solo en pantalla</b><small>Consejos, riesgos y próximos pasos siempre visibles; sin narración de voz.</small></span></div></div></section>}
+    {settingsOpen && <section className="console-settings-scene"><header><small>PARTIDA Y EXPERIENCIA</small><h2>Ajustes</h2><button onClick={() => { setSettingsOpen(false); setConfirmAction(undefined) }}><X /></button></header><div className="console-settings-grid">{(['master','music','interface','stadium'] as const).map((key) => <label key={key}><span>{key === 'master' ? 'Volumen maestro' : key === 'music' ? 'Música' : key === 'interface' ? 'Interfaz' : 'Estadio'}<b>{campaign.audio[key]}%</b></span><input type="range" min="0" max="100" value={campaign.audio[key]} onChange={(event) => updateAudio(key, Number(event.target.value))}/></label>)}<button className={campaign.audio.muted ? 'is-active' : ''} onClick={() => updateAudio('muted', !campaign.audio.muted)}>{campaign.audio.muted ? <VolumeX/> : <Volume2/>}<b>{campaign.audio.muted ? 'Activar todo' : 'Silenciar todo'}</b></button><div className="console-settings-note"><Sparkles/><span><b>Álex funciona solo en pantalla</b><small>Consejos, riesgos y próximos pasos siempre visibles; sin narración de voz.</small></span></div><div className="console-save-actions"><button onClick={exportSave}><Download/><span><b>Exportar partida</b><small>Guarda una copia local .gm26save</small></span></button><button className={confirmAction === 'restart' ? 'is-confirming' : ''} onClick={() => runCampaignAction('restart')}><RotateCcw/><span><b>{confirmAction === 'restart' ? 'Confirmar reinicio' : 'Reiniciar Mundial'}</b><small>Conserva seleccionador, entrenador y país</small></span></button><button className={confirmAction === 'new' ? 'is-confirming' : ''} onClick={() => runCampaignAction('new')}><UserRoundPlus/><span><b>{confirmAction === 'new' ? 'Confirmar nueva campaña' : 'Nueva campaña'}</b><small>Vuelve a elegir seleccionador y país</small></span></button><button className={`is-danger ${confirmAction === 'delete' ? 'is-confirming' : ''}`} onClick={() => runCampaignAction('delete')}><Trash2/><span><b>{confirmAction === 'delete' ? 'Confirmar eliminación' : 'Eliminar partida'}</b><small>Esta acción borra el guardado local</small></span></button></div></div></section>}
+
+    {campaign.outcome.status !== 'active' && !campaign.outcome.spectatorMode && <section className={`campaign-outcome-scene campaign-outcome-scene--${campaign.outcome.status}`}><div className="campaign-outcome-scene__glow"/><article><span className="campaign-outcome-scene__icon">{campaign.outcome.status === 'champion' ? <Trophy/> : <Flag code={nation?.flagCode ?? 'un'} label={nation?.name ?? 'Selección'}/>}</span><small>{campaign.outcome.status === 'champion' ? 'UNA NACIÓN EN LA HISTORIA' : 'BALANCE DE CAMPAÑA'}</small><h1>{campaign.outcome.status === 'champion' ? 'CAMPEONES DEL MUNDO' : campaign.outcome.status === 'eliminated' ? 'FIN DEL CAMINO' : 'MUNDIAL COMPLETADO'}</h1><p>{campaign.outcome.status === 'champion' ? `${nation?.name ?? 'Tu selección'} conquista la gloria tras una campaña inolvidable.` : `La campaña de ${nation?.name ?? 'tu selección'} ha terminado. El Mundial sigue vivo y tú decides el siguiente paso.`}</p><div className="campaign-outcome-stats"><span><b>{Object.values(campaign.matchResults).filter((result) => result.homeNationId === campaign.nationId || result.awayNationId === campaign.nationId).length}</b><small>PARTIDOS</small></span><span><b>{campaign.morale}</b><small>MORAL FINAL</small></span><span><b>{campaign.federation}</b><small>CONFIANZA</small></span><span><b>{Math.round((campaign.morale + campaign.federation + campaign.cohesion) / 3)}</b><small>VALORACIÓN</small></span></div><footer><button onClick={() => { updateCampaign((current) => ({ ...current, outcome: { ...current.outcome, spectatorMode: true } })); navigate('/juego/mundial') }}><Eye/> SEGUIR COMO ESPECTADOR</button><button onClick={() => { restartTournament(); navigate('/juego') }}><RotateCcw/> REINICIAR CON ESTE EQUIPO</button><button onClick={() => { startNew(); navigate('/crear-seleccionador') }}><UserRoundPlus/> OTRA CAMPAÑA</button></footer></article></section>}
   </div>
 }

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Activity, AlertCircle, ArrowRight, BadgeCheck, BarChart3, BatteryCharging, Brain, Building2, CalendarDays,
-  Check, CheckCircle2, ChevronDown, ChevronRight, CircleDot, ClipboardCheck, Clock3, Crown,
+  Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, CircleDot, ClipboardCheck, Clock3, Crown,
   Dumbbell, Eye, FileText, Filter, Flag as FlagIcon, Flame, Footprints, Globe2, Goal, Heart, HeartPulse,
   Info, LockKeyhole, MapPin, Medal, MessageCircle, MessageSquareText, Minus, Move, Newspaper, Play, Radio,
   Plus, RotateCcw, Search, Shield, ShieldAlert, ShieldCheck, Sparkles, Star, Stethoscope,
@@ -21,7 +21,7 @@ import { activeInjuries } from './availability'
 import { tournamentData } from '../data'
 import type { GroupId } from '../domain'
 import type { Position } from '../domain'
-import { assessTacticalShape, effectivePositionRating, inferTacticalPosition, positionSuitability, tacticalFitLabel } from '../domain/tacticalIntelligence'
+import { assessTacticalPlayer, assessTacticalShape, effectivePositionRating, inferTacticalPosition, positionSuitability, tacticalFitLabel } from '../domain/tacticalIntelligence'
 import { starProfile } from './starPlayers'
 import { SceneAssistant } from '../components/SceneAssistant'
 import { buildAssistantAdvice } from './experienceDirector'
@@ -330,6 +330,8 @@ export function Tactics() {
     return formationSlots[activeFormation]!.map((_, index) => campaign.tacticSettings.positions[`${activeFormation}:${index}`]?.playerId ?? automatic[index] ?? '')
   })
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null)
+  const [mode, setMode] = useState<'lineup' | 'possession' | 'defence' | 'setpieces'>('lineup')
+  const [benchPage, setBenchPage] = useState(0)
   const [draggingSlot, setDraggingSlot] = useState<number | null>(null)
   const [dragPreview, setDragPreview] = useState<{ x: number; y: number; position: string; rating: number } | null>(null)
   const [width, setWidth] = useState(campaign.tacticSettings.width)
@@ -346,6 +348,11 @@ export function Tactics() {
   const pitchRef = useRef<HTMLDivElement>(null)
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const slots = formationSlots[formation]
+  const updateAdvanced = <K extends keyof CampaignUIState['tacticSettings']>(key: K, value: CampaignUIState['tacticSettings'][K]) => {
+    updateCampaign((current) => ({ ...current, tacticSettings: { ...current.tacticSettings, [key]: value } }))
+    setSaved(true)
+    window.setTimeout(() => setSaved(false), 1200)
+  }
 
   const responsibilityRanking = (field: 'captainId' | 'penaltyTakerId' | 'cornerTakerId' | 'freeKickTakerId') => [...squad].sort((left, right) => {
     const score = (player: UIPlayer) => field === 'captainId'
@@ -363,6 +370,7 @@ export function Tactics() {
     mentalityOverride?: string
     positionsOverride?: typeof positions
     rolesOverride?: typeof roles
+    dutiesOverride?: CampaignUIState['tacticSettings']['duties']
     instructionsOverride?: string[]
     widthOverride?: number
     tempoOverride?: number
@@ -398,6 +406,7 @@ export function Tactics() {
         decisionLog: current.decisionLog.some((item) => item.key === 'tactic:first-plan') ? current.decisionLog : [...current.decisionLog, { key: 'tactic:first-plan', type: 'tactic' as const, label: `${f} · ${m}`, effects: { tacticalFamiliarity: 2 }, madeAt: current.date }],
         tacticalFamiliarity: current.decisionLog.some((item) => item.key === 'tactic:first-plan') ? current.tacticalFamiliarity : Math.min(100, current.tacticalFamiliarity + 2),
         tacticSettings: {
+          ...current.tacticSettings,
           width: overrides?.widthOverride ?? width,
           tempo: overrides?.tempoOverride ?? tempo,
           pressing: overrides?.pressOverride ?? press,
@@ -407,6 +416,7 @@ export function Tactics() {
           marking: overrides?.markingOverride ?? marking,
           positions: persistedPositions,
           roles: r,
+          duties: overrides?.dutiesOverride ?? current.tacticSettings.duties,
           instructions: ins,
         },
       }))
@@ -439,7 +449,9 @@ export function Tactics() {
     const y = Math.max(8, Math.min(92, ((event.clientY - rect.top) / rect.height) * 100))
     const pos = inferTacticalPosition(x, y)
     const player = squad.find((item) => item.id === lineup[draggingSlot])
-    const rating = player ? effectivePositionRating(player, pos) : 0
+    const role = roles[`${formation}:${draggingSlot}`] ?? roleOptionsExpanded(pos)[0]
+    const duty = campaign.tacticSettings.duties[`${formation}:${draggingSlot}`] ?? 'support'
+    const rating = player ? assessTacticalPlayer(player, x, y, campaign.tacticalFamiliarity, role, duty).effectiveRating : 0
     setDragPreview({ x, y, position: pos, rating })
     setPositions((current) => ({ ...current, [`${formation}:${draggingSlot}`]: { ...current[`${formation}:${draggingSlot}`], x, y, playerId: lineup[draggingSlot] } }))
   }
@@ -477,6 +489,14 @@ export function Tactics() {
     })
   }
 
+  const cycleDuty = (index: number) => {
+    const key = `${formation}:${index}`
+    const order: Array<'defend' | 'support' | 'attack'> = ['defend', 'support', 'attack']
+    const currentDuty = campaign.tacticSettings.duties[key] ?? 'support'
+    const next = { ...campaign.tacticSettings.duties, [key]: order[(order.indexOf(currentDuty) + 1) % order.length]! }
+    updateAdvanced('duties', next)
+  }
+
   const putInLineup = (playerId: string) => {
     if (selectedSlot === null) return
     setLineup((current) => {
@@ -509,15 +529,25 @@ export function Tactics() {
     squad.find((player) => player.id === campaign[field])?.shirtName ?? recommendedResponsibility(field)?.shirtName ?? 'Sin asignar'
 
   const selectedPlayer = selectedSlot !== null ? squad.find((player) => player.id === lineup[selectedSlot]) : undefined
+  const benchPlayers = squad.filter((player) => !lineup.includes(player.id))
+  const benchPages = Math.max(1, Math.ceil(benchPlayers.length / 6))
   const selectedDefault = selectedSlot !== null ? (slots[selectedSlot] ?? slots[0]!) : slots[0]!
   const selectedPosition = selectedSlot !== null ? positions[`${formation}:${selectedSlot}`] : undefined
   const selectedTarget = inferTacticalPosition(selectedPosition?.x ?? selectedDefault[0], selectedPosition?.y ?? selectedDefault[1])
   const selectedSuitability = selectedPlayer ? positionSuitability(selectedPlayer, selectedTarget) : 0
-  const selectedEffective = selectedPlayer ? effectivePositionRating(selectedPlayer, selectedTarget) : 0
+  const selectedKey = selectedSlot !== null ? `${formation}:${selectedSlot}` : `${formation}:0`
+  const selectedRole = roles[selectedKey] ?? roleOptionsExpanded(selectedTarget)[0]
+  const selectedDuty = campaign.tacticSettings.duties[selectedKey] ?? 'support'
+  const selectedAssessment = selectedPlayer ? assessTacticalPlayer(selectedPlayer, selectedPosition?.x ?? selectedDefault[0], selectedPosition?.y ?? selectedDefault[1], campaign.tacticalFamiliarity, selectedRole, selectedDuty) : undefined
+  const selectedEffective = selectedAssessment?.effectiveRating ?? 0
   const unitRating = Math.round(slots.reduce((total, [x, y], index) => {
     const player = squad.find((item) => item.id === lineup[index])
     const custom = positions[`${formation}:${index}`]
-    return total + (player ? effectivePositionRating(player, inferTacticalPosition(custom?.x ?? x, custom?.y ?? y)) : 0)
+    const pointX = custom?.x ?? x
+    const pointY = custom?.y ?? y
+    const key = `${formation}:${index}`
+    const position = inferTacticalPosition(pointX, pointY)
+    return total + (player ? assessTacticalPlayer(player, pointX, pointY, campaign.tacticalFamiliarity, roles[key] ?? roleOptionsExpanded(position)[0], campaign.tacticSettings.duties[key] ?? 'support').effectiveRating : 0)
   }, 0) / Math.max(1, slots.length))
   const shapeAssessment = assessTacticalShape(slots.map(([x, y], index) => {
     const custom = positions[`${formation}:${index}`]
@@ -545,12 +575,33 @@ export function Tactics() {
     return lineRatings.length ? Math.round(lineRatings.reduce((s, v) => s + v, 0) / lineRatings.length) : 0
   }
 
+  const applyQuickPlan = (plan: 'recommended' | 'protect' | 'balance' | 'chase') => {
+    const config = plan === 'protect'
+      ? { mentality: 'Cauta', tempo: 40, press: 44, line: 38, width: 50, passing: 38, block: 'low' as const, loss: 'regroup' as const, gain: 'balanced' as const, waste: 62 }
+      : plan === 'chase'
+        ? { mentality: 'Ofensiva', tempo: 84, press: 86, line: 76, width: 72, passing: 66, block: 'high' as const, loss: 'counter-press' as const, gain: 'counter' as const, waste: 0 }
+        : { mentality: 'Equilibrada', tempo: 62, press: 66, line: 58, width: 58, passing: 46, block: 'mid' as const, loss: 'counter-press' as const, gain: 'balanced' as const, waste: 12 }
+    setMentality(config.mentality); setTempo(config.tempo); setPress(config.press); setLine(config.line); setWidth(config.width); setPassingDirectness(config.passing)
+    updateCampaign((current) => ({
+      ...current,
+      mentality: config.mentality,
+      tacticSettings: { ...current.tacticSettings, tempo: config.tempo, pressing: config.press, defensiveLine: config.line, width: config.width, passingDirectness: config.passing, defensiveBlock: config.block, lossTransition: config.loss, gainTransition: config.gain, timeWasting: config.waste },
+    }))
+    setSaved(true); window.setTimeout(() => setSaved(false), 1200)
+  }
+
   return (
     <div className="tactics-page-v2 page-enter">
       {!campaign.prologueComplete && <SceneAssistant advice={tacticAdvice} step={4} />}
 
       {/* TOP BAR: Formation, Mentality, Quick Plans */}
       <div className="tactics-topbar">
+        <nav className="tactics-mode-nav" aria-label="Modo táctico">
+          <button className={mode === 'lineup' ? 'is-active' : ''} onClick={() => setMode('lineup')}>ALINEACIÓN</button>
+          <button className={mode === 'possession' ? 'is-active' : ''} onClick={() => setMode('possession')}>CON BALÓN</button>
+          <button className={mode === 'defence' ? 'is-active' : ''} onClick={() => setMode('defence')}>SIN BALÓN</button>
+          <button className={mode === 'setpieces' ? 'is-active' : ''} onClick={() => setMode('setpieces')}>BALÓN PARADO</button>
+        </nav>
         <div className="tactics-topbar__formation">
           <span>FORMACIÓN</span>
           <select value={formation} onChange={(event) => { const next = event.target.value; setFormation(next); const newLineup = smartLineup(squad, formationSlots[next]!); setLineup(newLineup); setSelectedSlot(null); autoSave({ formationOverride: next, lineupOverride: newLineup }) }}>
@@ -562,9 +613,10 @@ export function Tactics() {
           <Segmented value={mentality} onChange={(v) => { setMentality(v); autoSave({ mentalityOverride: v }) }} options={['Cauta', 'Equilibrada', 'Positiva', 'Ofensiva']} label="Mentalidad" />
         </div>
         <div className="tactics-topbar__plans">
-          <button onClick={() => { setMentality('Cauta'); setTempo(40); setPress(45); autoSave({ mentalityOverride: 'Cauta', tempoOverride: 40, pressOverride: 45 }) }}><Shield /> Proteger</button>
-          <button className={mentality === 'Equilibrada' ? 'is-active' : ''} onClick={() => { setMentality('Equilibrada'); setTempo(62); setPress(66); autoSave({ mentalityOverride: 'Equilibrada', tempoOverride: 62, pressOverride: 66 }) }}><CircleDot /> Equilibrar</button>
-          <button onClick={() => { setMentality('Ofensiva'); setTempo(82); setPress(84); autoSave({ mentalityOverride: 'Ofensiva', tempoOverride: 82, pressOverride: 84 }) }}><Zap /> Remontar</button>
+          <button className="is-recommended" onClick={() => applyQuickPlan('recommended')}><Sparkles /> Recomendada</button>
+          <button onClick={() => applyQuickPlan('protect')}><Shield /> Proteger</button>
+          <button className={mentality === 'Equilibrada' ? 'is-active' : ''} onClick={() => applyQuickPlan('balance')}><CircleDot /> Equilibrar</button>
+          <button onClick={() => applyQuickPlan('chase')}><Zap /> Remontar</button>
         </div>
         <div className="tactics-topbar__save">
           <span className={`save-indicator ${saved ? 'is-saved' : ''}`}>{saved ? <><Check /> GUARDADO</> : <><ClipboardCheck /> AUTO-SAVE</>}</span>
@@ -575,24 +627,60 @@ export function Tactics() {
       <div className="tactics-layout-v2">
         {/* LEFT: Tactic Controls */}
         <aside className="tactic-controls-v2">
-          <header><span className="eyebrow">CON BALÓN</span><h3>Construcción</h3></header>
-          <TacticSliderV2 label="Amplitud" left="Estrecha" right="Amplia" value={width} setValue={(v) => { setWidth(v); autoSave({ widthOverride: v }) }} />
-          <TacticSliderV2 label="Ritmo" left="Paciente" right="Vertiginoso" value={tempo} setValue={(v) => { setTempo(v); autoSave({ tempoOverride: v }) }} />
-          <TacticSliderV2 label="Pase" left="Combinativo" right="Directo" value={passingDirectness} setValue={(v) => { setPassingDirectness(v); autoSave({ passingOverride: v }) }} />
-          <label className="select-control-v2"><span>TRANSICIÓN</span><select value={transition} onChange={(event) => { const v = event.target.value as typeof transition; setTransition(v); autoSave({ transitionOverride: v }) }}><option value="hold-shape">Reagruparse</option><option value="balanced">Equilibrar</option><option value="counter">Contrapresión</option></select></label>
-          <div className="instruction-list-v2">
-            <button className={instructions.includes('play-out') ? 'is-active' : ''} onClick={() => toggleInstruction('play-out')}>{instructions.includes('play-out') ? <Check /> : <Plus />} Salir jugando</button>
-            <button className={instructions.includes('overlap') ? 'is-active' : ''} onClick={() => toggleInstruction('overlap')}>{instructions.includes('overlap') ? <Check /> : <Plus />} Doblar por fuera</button>
-            <button className={instructions.includes('work-box') ? 'is-active' : ''} onClick={() => toggleInstruction('work-box')}>{instructions.includes('work-box') ? <Check /> : <Plus />} Llegar al área</button>
-          </div>
-          <header><span className="eyebrow">SIN BALÓN</span><h3>Defensa</h3></header>
-          <TacticSliderV2 label="Presión" left="Bloque" right="Asfixiante" value={press} setValue={(v) => { setPress(v); autoSave({ pressOverride: v }) }} />
-          <TacticSliderV2 label="Línea" left="Baja" right="Alta" value={line} setValue={(v) => { setLine(v); autoSave({ lineOverride: v }) }} />
-          <label className="select-control-v2"><span>MARCAJE</span><select value={marking} onChange={(event) => { const v = event.target.value as typeof marking; setMarking(v); autoSave({ markingOverride: v }) }}><option value="zonal">Zonal</option><option value="mixed">Mixto</option><option value="player">Al hombre</option></select></label>
-          <div className="instruction-list-v2">
-            <button className={instructions.includes('counter-press') ? 'is-active' : ''} onClick={() => toggleInstruction('counter-press')}>{instructions.includes('counter-press') ? <Check /> : <Plus />} Contra-presión</button>
-            <button className={instructions.includes('outside-trap') ? 'is-active' : ''} onClick={() => toggleInstruction('outside-trap')}>{instructions.includes('outside-trap') ? <Check /> : <Plus />} Trampa exterior</button>
-          </div>
+          {mode === 'lineup' && <>
+            <header><span className="eyebrow">ALINEACIÓN</span><h3>Once, rol y deber</h3></header>
+            <p className="tactic-mode-help">Arrastra cualquier camiseta. El motor detecta la demarcación exacta y recalcula el rendimiento.</p>
+            {selectedPlayer ? <div className="selected-player-controls">
+              <b>{selectedPlayer.shirtName}</b><span>{selectedTarget} · {selectedEffective} efectivo</span>
+              <button onClick={() => selectedSlot !== null && cycleRole(selectedSlot, selectedTarget)}>ROL <strong>{selectedRole}</strong><ChevronRight/></button>
+              <button onClick={() => selectedSlot !== null && cycleDuty(selectedSlot)}>DEBER <strong>{selectedDuty === 'defend' ? 'Defensa' : selectedDuty === 'attack' ? 'Ataque' : 'Apoyo'}</strong><ChevronRight/></button>
+              {['mantener posición','marcar más','arriesgar pases'].map((instruction) => { const active = (campaign.tacticSettings.playerInstructions[selectedKey] ?? []).includes(instruction); return <button key={instruction} className={active ? 'is-active' : ''} onClick={() => { const current = campaign.tacticSettings.playerInstructions[selectedKey] ?? []; updateAdvanced('playerInstructions', { ...campaign.tacticSettings.playerInstructions, [selectedKey]: active ? current.filter((item)=>item!==instruction) : [...current,instruction] }) }}>{active ? <Check/> : <Plus/>}{instruction}</button> })}
+            </div> : <div className="tactic-select-prompt tactic-select-prompt--overview">
+              <Move/>
+              <b>Plan recomendado activo</b>
+              <span>El once ya puede competir. Selecciona una camiseta para afinar su posición, rol y deber.</span>
+              <div className="tactic-default-readout">
+                <span><strong>{unitRating}</strong><small>NIVEL DEL ONCE</small></span>
+                <span><strong>{campaign.tacticalFamiliarity}%</strong><small>FAMILIARIDAD</small></span>
+              </div>
+            </div>}
+          </>}
+          {mode === 'possession' && <>
+            <header><span className="eyebrow">CON BALÓN</span><h3>Construcción y ataque</h3></header>
+            <TacticSliderV2 label="Amplitud" left="Estrecha" right="Amplia" value={width} setValue={(v) => { setWidth(v); autoSave({ widthOverride: v }) }} />
+            <TacticSliderV2 label="Ritmo" left="Paciente" right="Vertiginoso" value={tempo} setValue={(v) => { setTempo(v); autoSave({ tempoOverride: v }) }} />
+            <TacticSliderV2 label="Riesgo de pase" left="Seguro" right="Agresivo" value={campaign.tacticSettings.passingRisk} setValue={(v) => updateAdvanced('passingRisk', v)} />
+            <TacticSliderV2 label="Pase vertical" left="Combinativo" right="Directo" value={passingDirectness} setValue={(v) => { setPassingDirectness(v); autoSave({ passingOverride: v }) }} />
+            <TacticSliderV2 label="Libertad creativa" left="Disciplinada" right="Expresiva" value={campaign.tacticSettings.creativeFreedom} setValue={(v) => updateAdvanced('creativeFreedom', v)} />
+            <AdvancedSelect label="SALIDA" value={campaign.tacticSettings.buildUp} options={[['short','Corta'],['balanced','Mixta'],['direct','Directa']]} onChange={(value)=>updateAdvanced('buildUp', value as CampaignUIState['tacticSettings']['buildUp'])}/>
+            <AdvancedSelect label="CENTROS" value={campaign.tacticSettings.crossing} options={[['low','Rasos'],['mixed','Mixtos'],['aerial','Aéreos']]} onChange={(value)=>updateAdvanced('crossing', value as CampaignUIState['tacticSettings']['crossing'])}/>
+            <AdvancedSelect label="REGATE" value={campaign.tacticSettings.dribbling} options={[['safe','Conservar'],['balanced','Equilibrado'],['expressive','Encara']]} onChange={(value)=>updateAdvanced('dribbling', value as CampaignUIState['tacticSettings']['dribbling'])}/>
+            <AdvancedSelect label="TRAS RECUPERAR" value={campaign.tacticSettings.gainTransition} options={[['hold','Mantener'],['balanced','Leer jugada'],['counter','Contraatacar']]} onChange={(value)=>updateAdvanced('gainTransition', value as CampaignUIState['tacticSettings']['gainTransition'])}/>
+            <AdvancedSelect label="PORTERO" value={campaign.tacticSettings.goalkeeperDistribution} options={[['short','Salida corta'],['wide','A banda'],['long','Largo']]} onChange={(value)=>updateAdvanced('goalkeeperDistribution', value as CampaignUIState['tacticSettings']['goalkeeperDistribution'])}/>
+          </>}
+          {mode === 'defence' && <>
+            <header><span className="eyebrow">SIN BALÓN</span><h3>Bloque y presión</h3></header>
+            <TacticSliderV2 label="Presión" left="Contener" right="Asfixiante" value={press} setValue={(v) => { setPress(v); autoSave({ pressOverride: v }) }} />
+            <TacticSliderV2 label="Altura defensiva" left="Baja" right="Alta" value={line} setValue={(v) => { setLine(v); autoSave({ lineOverride: v }) }} />
+            <TacticSliderV2 label="Pérdida de tiempo" left="Nunca" right="Máxima" value={campaign.tacticSettings.timeWasting} setValue={(v) => updateAdvanced('timeWasting', v)} />
+            <AdvancedSelect label="BLOQUE" value={campaign.tacticSettings.defensiveBlock} options={[['low','Bajo'],['mid','Medio'],['high','Alto']]} onChange={(value)=>updateAdvanced('defensiveBlock', value as CampaignUIState['tacticSettings']['defensiveBlock'])}/>
+            <AdvancedSelect label="MARCAJE" value={marking} options={[['zonal','Zonal'],['mixed','Mixto'],['player','Individual']]} onChange={(value)=>{ const v=value as typeof marking;setMarking(v);autoSave({markingOverride:v}) }}/>
+            <AdvancedSelect label="TRAMPA DE PRESIÓN" value={campaign.tacticSettings.pressingTrap} options={[['outside','Llevar fuera'],['inside','Llevar dentro'],['balanced','Sin trampa']]} onChange={(value)=>updateAdvanced('pressingTrap', value as CampaignUIState['tacticSettings']['pressingTrap'])}/>
+            <AdvancedSelect label="TRAS PÉRDIDA" value={campaign.tacticSettings.lossTransition} options={[['regroup','Reagrupar'],['balanced','Equilibrar'],['counter-press','Contrapresión']]} onChange={(value)=>updateAdvanced('lossTransition', value as CampaignUIState['tacticSettings']['lossTransition'])}/>
+            <button className={`tactic-toggle-wide ${campaign.tacticSettings.offsideTrap ? 'is-active' : ''}`} onClick={()=>updateAdvanced('offsideTrap', !campaign.tacticSettings.offsideTrap)}>{campaign.tacticSettings.offsideTrap ? <Check/> : <Plus/>} TRAMPA DEL FUERA DE JUEGO</button>
+          </>}
+          {mode === 'setpieces' && <>
+            <header><span className="eyebrow">BALÓN PARADO</span><h3>Responsables y rutinas</h3></header>
+            <div className="setpiece-orders">
+              <button onClick={() => cycleResponsibility('captainId')}><CircleDot/><span>CAPITÁN<b>{responsibilityName('captainId')}</b></span><ChevronRight/></button>
+              <button onClick={() => cycleResponsibility('penaltyTakerId')}><Goal/><span>PENALTIS · ORDEN 1<b>{responsibilityName('penaltyTakerId')}</b></span><ChevronRight/></button>
+              <button onClick={() => cycleResponsibility('freeKickTakerId')}><Target/><span>FALTAS DIRECTAS<b>{responsibilityName('freeKickTakerId')}</b></span><ChevronRight/></button>
+              <button onClick={() => cycleResponsibility('cornerTakerId')}><FlagIcon/><span>CÓRNERS IZQ./DER.<b>{responsibilityName('cornerTakerId')}</b></span><ChevronRight/></button>
+            </div>
+            <AdvancedSelect label="RUTINA OFENSIVA" value={campaign.tacticSettings.setPieces.attackingRoutine} options={[['near-post','Primer palo'],['far-post','Segundo palo'],['crowd-keeper','Bloquear portero'],['short','En corto']]} onChange={(value)=>updateAdvanced('setPieces',{...campaign.tacticSettings.setPieces,attackingRoutine:value as CampaignUIState['tacticSettings']['setPieces']['attackingRoutine']})}/>
+            <AdvancedSelect label="RUTINA DEFENSIVA" value={campaign.tacticSettings.setPieces.defensiveRoutine} options={[['zonal','Zonal'],['mixed','Mixta'],['player','Individual']]} onChange={(value)=>updateAdvanced('setPieces',{...campaign.tacticSettings.setPieces,defensiveRoutine:value as CampaignUIState['tacticSettings']['setPieces']['defensiveRoutine']})}/>
+            <p className="tactic-mode-help">El orden de cinco lanzadores se completa automáticamente por finalización, compostura y técnica. Puedes rotar el primero desde cada responsabilidad.</p>
+          </>}
         </aside>
 
         {/* CENTER: Vertical Pitch */}
@@ -632,14 +720,16 @@ export function Tactics() {
               const custom = positions[key]
               const dynamicPosition = inferTacticalPosition(custom?.x ?? x, custom?.y ?? y)
               const suitability = player ? positionSuitability(player, dynamicPosition) : 0
-              const effective = player ? effectivePositionRating(player, dynamicPosition) : 0
               const role = roles[key] ?? roleOptionsExpanded(dynamicPosition)[0]
+              const duty = campaign.tacticSettings.duties[key] ?? 'support'
+              const assessment = player ? assessTacticalPlayer(player, custom?.x ?? x, custom?.y ?? y, campaign.tacticalFamiliarity, role, duty) : undefined
+              const effective = assessment?.effectiveRating ?? 0
               const isDragging = draggingSlot === index
               return (
                 <div
                   key={`${formation}-${index}`}
                   className={`tactic-player-v2 ${isDragging ? 'is-dragging' : ''} ${selectedSlot === index ? 'is-selected' : ''} ${suitability < 60 ? 'is-out-of-position' : suitability < 90 ? 'is-adapting' : 'is-natural'}`}
-                  style={{ left: `${Math.max(6, Math.min(94, custom?.x ?? x))}%`, top: `${Math.max(6, Math.min(94, custom?.y ?? y))}%` }}
+                  style={{ left: `${Math.max(7, Math.min(93, custom?.x ?? x))}%`, top: `${Math.max(8, Math.min(92, custom?.y ?? y))}%` }}
                   onClick={(event) => { event.stopPropagation(); setSelectedSlot(index) }}
                   onPointerDown={(event) => {
                     event.stopPropagation()
@@ -651,22 +741,22 @@ export function Tactics() {
                   <span className={`tp-v2__rating ${suitability >= 90 ? 'is-natural' : suitability >= 60 ? 'is-adapting' : 'is-risk'}`}>{effective || '—'}</span>
                   <TeamShirt nationId={player?.nationId ?? campaign.nationId} number={player ? (campaign.shirtNumbers[player.id] ?? index + 1) : index + 1} label={player?.shirtName} className="tp-v2__shirt" />
                   <span className="tp-v2__name">{player?.shirtName ?? 'Elegir'}</span>
-                  <button className="tp-v2__role" onClick={(event) => { event.stopPropagation(); cycleRole(index, dynamicPosition) }}>{dynamicPosition} · {role} <ChevronDown /></button>
+                  <button className="tp-v2__role" onClick={(event) => { event.stopPropagation(); cycleRole(index, dynamicPosition) }}>{dynamicPosition} · {duty === 'defend' ? 'DEF' : duty === 'attack' ? 'ATA' : 'APO'} <ChevronDown /></button>
                 </div>
               )
             })}
 
-            {/* Intensity bar at bottom */}
-            <div className="tactic-intensity-v2">
-              <span>INTENSIDAD</span>
-              <div><i style={{ width: `${Math.round((tempo + press) / 2)}%` }} /></div>
-              <b>{Math.round((tempo + press) / 2)}%</b>
-            </div>
+          </div>
+          {/* Intensity is a real footer, never an overlay over the goalkeeper. */}
+          <div className="tactic-intensity-v2">
+            <span>INTENSIDAD</span>
+            <div><i style={{ width: `${Math.round((tempo + press) / 2)}%` }} /></div>
+            <b>{Math.round((tempo + press) / 2)}%</b>
           </div>
         </section>
 
         {/* RIGHT: Motor Posicional + Bench + Responsibilities */}
-        <aside className="lineup-panel-v2">
+        <aside className={`lineup-panel-v2 mode-${mode}`}>
           {/* Motor Posicional */}
           <section className="motor-posicional-v2">
             <span className="eyebrow"><Brain /> MOTOR POSICIONAL</span>
@@ -686,10 +776,11 @@ export function Tactics() {
             {selectedPlayer ? <article className="player-tactical-detail">
               <header><b>{selectedPlayer.shirtName}</b><em>{selectedTarget}</em></header>
               <div className="ptd-stats">
-                <span><small>Base</small><b>{playerOverall(selectedPlayer)}</b></span>
-                <span><small>Efectivo</small><b className={selectedEffective < playerOverall(selectedPlayer) ? 'is-negative' : 'is-positive'}>{selectedEffective}</b></span>
+                <span><small>Nivel base</small><b>{playerOverall(selectedPlayer)}</b></span>
+                <span><small>Nivel efectivo</small><b className={selectedEffective < playerOverall(selectedPlayer) ? 'is-negative' : 'is-positive'}>{playerOverall(selectedPlayer)} → {selectedEffective}</b></span>
                 <span><small>Encaje</small><b>{selectedSuitability}%</b></span>
               </div>
+              {selectedAssessment && <div className="rating-breakdown">{selectedAssessment.breakdown.map((item)=><span key={item.label}><small>{item.label}</small><b className={item.value < 0 ? 'is-negative' : 'is-positive'}>{item.value > 0 ? '+' : ''}{item.value}</b></span>)}</div>}
               <div className="ptd-attributes">
                 <div><small>TEC</small><b>{selectedPlayer.gameRatings.technical ?? playerOverall(selectedPlayer)}</b></div>
                 <div><small>FIS</small><b>{selectedPlayer.gameRatings.physical ?? playerOverall(selectedPlayer)}</b></div>
@@ -709,9 +800,9 @@ export function Tactics() {
           </section>
 
           {/* Bench */}
-          <header className="bench-header-v2"><span className="eyebrow">BANQUILLO</span></header>
+          <header className="bench-header-v2"><span className="eyebrow">BANQUILLO</span><nav><button disabled={benchPage===0} onClick={()=>setBenchPage((page)=>Math.max(0,page-1))}><ChevronLeft/></button><b>{benchPage+1}/{benchPages}</b><button disabled={benchPage>=benchPages-1} onClick={()=>setBenchPage((page)=>Math.min(benchPages-1,page+1))}><ChevronRight/></button></nav></header>
           <div className="bench-list-v2">
-            {squad.filter((player) => !lineup.includes(player.id)).map((player) => (
+            {benchPlayers.slice(benchPage*6,benchPage*6+6).map((player) => (
               <div key={player.id} className="bench-item-v2">
                 <span className="bench-item-v2__pos">{player.position}</span>
                 <span className="bench-item-v2__name">{player.shirtName}{starProfile(player) && <Star className="bench-star" />}</span>
@@ -722,7 +813,7 @@ export function Tactics() {
           </div>
 
           {/* Responsibilities */}
-          <div className="set-pieces-v2">
+          <div className={`set-pieces-v2 ${mode === 'setpieces' ? 'is-focused' : ''}`}>
             <span className="eyebrow">RESPONSABILIDADES</span>
             <button onClick={() => cycleResponsibility('captainId')}><CircleDot /><span><b>Capitán</b><small>{responsibilityName('captainId')}</small></span><ChevronRight /></button>
             <button onClick={() => cycleResponsibility('penaltyTakerId')}><Goal /><span><b>Penaltis</b><small>{responsibilityName('penaltyTakerId')}</small></span><ChevronRight /></button>
@@ -751,6 +842,10 @@ const roleOptionsExpanded = (position: string) => position === 'GK'
 
 function TacticSliderV2({ label, left, right, value, setValue }: { label: string; left: string; right: string; value: number; setValue: (value: number) => void }) {
   return <label className="tactic-slider-v2"><span><b>{label}</b><strong>{value}</strong></span><input type="range" min="0" max="100" value={value} onChange={(event) => setValue(Number(event.target.value))} /><small><i>{left}</i><i>{right}</i></small></label>
+}
+
+function AdvancedSelect({ label, value, options, onChange }: { label: string; value: string; options: Array<[string, string]>; onChange: (value: string) => void }) {
+  return <label className="advanced-select"><span>{label}</span><select value={value} onChange={(event)=>onChange(event.target.value)}>{options.map(([option,labelText])=><option key={option} value={option}>{labelText}</option>)}</select></label>
 }
 
 const trainingOptions = [
@@ -808,6 +903,7 @@ function TeamTalk() {
 }
 
 export function MedicalCenter() {
+  const { updateCampaign } = useGame()
   const { campaign, players } = currentData()
   const squad = players.filter((player) => campaign.squadIds.includes(player.id))
   const [filter, setFilter] = useState('Todos')
@@ -816,7 +912,10 @@ export function MedicalCenter() {
   const injuryByPlayer = new Map(injuries.map((injury) => [injury.playerId, injury]))
   const medical = squad.map((player,index)=>({player, condition: injuryByPlayer.has(player.id)?58:83+(index*5%16), fatigue: 12+(index*11%57), risk: injuryByPlayer.has(player.id)?'Medio':index%13===0?'Medio':index%7===0?'Bajo':'Mínimo', status:injuryByPlayer.has(player.id)?'Lesionado':suspended.has(player.id)?'Suspendido':index%17===0?'Carga reducida':'Disponible'}))
   const visible = medical.filter((item)=>filter==='Todos'||item.risk===filter)
-  return <div className="medical-page page-enter"><section className="page-heading"><div><span className="eyebrow"><HeartPulse /> DISPONIBILIDAD</span><h2>Protege a quienes <em>te llevarán más lejos</em></h2><p>Control de condición, fatiga, riesgo, lesiones, sanciones y recomendaciones del equipo médico.</p></div><div className="medical-summary"><Metric label="DISPONIBLES" value={`${medical.filter(i=>i.status==='Disponible'||i.status==='Carga reducida').length}/${medical.length}`} tone="green"/><Metric label="NO ELEGIBLES" value={suspended.size+injuries.length} tone="red"/><Metric label="FATIGA MEDIA" value={`${Math.round(medical.reduce((a,b)=>a+b.fatigue,0)/(medical.length||1))}%`} tone="gold"/></div></section><div className="medical-alert"><Stethoscope/><span><b>Informe de disponibilidad</b>{injuries.length||suspended.size?`${injuries.length} lesionado(s) y ${suspended.size} sancionado(s) no están disponibles.`:'No hay lesiones ni sanciones activas.'} El riesgo físico se actualiza con cada carga.</span><button onClick={() => setFilter('Medio')}>VER RECOMENDACIONES <ChevronRight/></button></div><Panel className="medical-table-panel" title="Estado de la plantilla" action={<div className="position-filter">{['Todos','Mínimo','Bajo','Medio'].map(item=><button className={filter===item?'is-active':''} key={item} onClick={()=>setFilter(item)}>{item}</button>)}</div>}><table className="player-table medical-table"><thead><tr><th>JUGADOR</th><th>CONDICIÓN</th><th>FATIGA</th><th>RIESGO</th><th>ESTADO</th><th>RECOMENDACIÓN</th></tr></thead><tbody>{visible.map(({player,condition,fatigue,risk,status})=><tr key={player.id}><td><div className="player-cell"><PlayerPortrait playerId={player.id} nationId={player.nationId} label={playerName(player)} /><span><b>{playerName(player)} {starProfile(player) && <Star className="inline-star" />}</b><small>{player.position} · {playerClub(player)}</small></span></div></td><td><div className="table-bar"><Progress value={condition} tone={condition>90?'green':'cyan'}/><b>{condition}%</b></div></td><td><div className="table-bar"><Progress value={fatigue} tone={fatigue>55?'red':fatigue>35?'gold':'green'}/><b>{fatigue}%</b></div></td><td><span className={`risk risk--${risk.toLowerCase()}`}>{risk==='Medio'?<AlertCircle/>:<ShieldCheck/>}{risk}</span></td><td><span className={status==='Disponible'?'status status--ok':'status status--warn'}>{status}</span></td><td>{status==='Lesionado'?'Tratamiento · reevaluación diaria':status==='Suspendido'?'No elegible · cumple sanción':risk==='Medio'?'Carga reducida + fisioterapia':risk==='Bajo'?'Evitar doble sesión':'Plan completo'}</td></tr>)}</tbody></table></Panel></div>
+  const medicalMission = campaign.agenda.find((item)=>item.date===campaign.date&&item.type==='medical')
+  const reviewed = Boolean(medicalMission && campaign.missionResolutions[medicalMission.id]?.status==='completed')
+  const confirmReview = () => medicalMission && updateCampaign((current)=>({ ...current, physicalRisk: Math.max(0,current.physicalRisk-4), missionResolutions:{...current.missionResolutions,[medicalMission.id]:{status:'completed',resolvedAt:current.date}} }))
+  return <div className="medical-page page-enter"><section className="page-heading"><div><span className="eyebrow"><HeartPulse /> DISPONIBILIDAD</span><h2>Protege a quienes <em>te llevarán más lejos</em></h2><p>Control de condición, fatiga, riesgo, lesiones, sanciones y recomendaciones del equipo médico.</p></div><div className="medical-summary"><Metric label="DISPONIBLES" value={`${medical.filter(i=>i.status==='Disponible'||i.status==='Carga reducida').length}/${medical.length}`} tone="green"/><Metric label="RIESGO TEMPORAL" value={`${campaign.physicalRisk}%`} tone={campaign.physicalRisk>6?'red':'gold'}/><Metric label="FATIGA MEDIA" value={`${Math.round(medical.reduce((a,b)=>a+b.fatigue,0)/(medical.length||1))}%`} tone="gold"/></div></section><div className="medical-alert"><Stethoscope/><span><b>Informe de disponibilidad</b>{injuries.length||suspended.size?`${injuries.length} lesionado(s) y ${suspended.size} sancionado(s) no están disponibles.`:'No hay lesiones ni sanciones activas.'} El control evita el +4 de riesgo físico por omisión.</span><button disabled={!medicalMission||reviewed} onClick={confirmReview}>{reviewed?'REVISIÓN CONFIRMADA':'CONFIRMAR REVISIÓN'} <ChevronRight/></button></div><Panel className="medical-table-panel" title="Estado de la plantilla" action={<div className="position-filter">{['Todos','Mínimo','Bajo','Medio'].map(item=><button className={filter===item?'is-active':''} key={item} onClick={()=>setFilter(item)}>{item}</button>)}</div>}><table className="player-table medical-table"><thead><tr><th>JUGADOR</th><th>CONDICIÓN</th><th>FATIGA</th><th>RIESGO</th><th>ESTADO</th><th>RECOMENDACIÓN</th></tr></thead><tbody>{visible.map(({player,condition,fatigue,risk,status})=><tr key={player.id}><td><div className="player-cell"><PlayerPortrait playerId={player.id} nationId={player.nationId} label={playerName(player)} /><span><b>{playerName(player)} {starProfile(player) && <Star className="inline-star" />}</b><small>{player.position} · {playerClub(player)}</small></span></div></td><td><div className="table-bar"><Progress value={condition} tone={condition>90?'green':'cyan'}/><b>{condition}%</b></div></td><td><div className="table-bar"><Progress value={fatigue} tone={fatigue>55?'red':fatigue>35?'gold':'green'}/><b>{fatigue}%</b></div></td><td><span className={`risk risk--${risk.toLowerCase()}`}>{risk==='Medio'?<AlertCircle/>:<ShieldCheck/>}{risk}</span></td><td><span className={status==='Disponible'?'status status--ok':'status status--warn'}>{status}</span></td><td>{status==='Lesionado'?'Tratamiento · reevaluación diaria':status==='Suspendido'?'No elegible · cumple sanción':risk==='Medio'?'Carga reducida + fisioterapia':risk==='Bajo'?'Evitar doble sesión':'Plan completo'}</td></tr>)}</tbody></table></Panel></div>
 }
 
 export function PressRoom() {
@@ -869,6 +968,7 @@ export function Tournament() {
   const { campaign } = useGame()
   const navigate = useNavigate()
   const [tab,setTab]=useState<'grupos'|'cuadro'|'calendario'|'estadisticas'>('calendario')
+  const [groupPage,setGroupPage]=useState(0)
   const progress = deriveCampaignProgress(
     {
       ...tournamentData,
@@ -884,7 +984,7 @@ export function Tournament() {
     <section className={`tournament-banner ${progress.completed ? 'tournament-banner--complete' : ''}`}><div className="tournament-banner__rings"/><span className="eyebrow"><Crown/> {progress.completed ? 'LA HISTORIA YA TIENE CAMPEÓN' : 'LA CUMBRE DEL FÚTBOL'}</span><h2>{progress.completed ? <>{champion?.name} <em>campeona</em></> : <>Mundial <em>2026</em></>}</h2><p>{progress.completed ? `${progress.stats.totalGoals} goles y 104 partidos después, comienza la ceremonia final.` : '48 naciones · 104 partidos · 16 ciudades · un campeón'}</p><div><span><b>{progress.stats.matchesPlayed}</b> JUGADOS</span><i/><span><b>{progress.stats.totalGoals}</b> GOLES</span><i/><span><b>{progress.stats.matchesRemaining}</b> PENDIENTES</span></div></section>
     {progress.controlledNationEliminated && !progress.completed && <div className="spectator-notice"><Eye/><span><b>Tu selección ha sido eliminada.</b> La campaña continúa en modo espectador: puedes seguir cada cruce hasta la final.</span></div>}
     <div className="page-tabs page-tabs--center tournament-tabs"><button className={tab==='calendario'?'is-active':''} onClick={()=>setTab('calendario')}><CalendarDays/> Centro del Mundial</button><button className={tab==='grupos'?'is-active':''} onClick={()=>setTab('grupos')}><Users/> Grupos</button><button className={tab==='cuadro'?'is-active':''} onClick={()=>setTab('cuadro')}><Swords/> Ruta a la final</button><button className={tab==='estadisticas'?'is-active':''} onClick={()=>setTab('estadisticas')}><BarChart3/> Estadísticas</button></div>
-    {tab==='grupos'&&<div className="group-grid">{groups.map((group) => <Panel key={group} className="group-card" eyebrow="FASE DE GRUPOS" title={`Grupo ${group}`} action={<span className={`group-status ${progress.groupComplete[group] ? 'is-complete' : ''}`}>{progress.groupComplete[group] ? 'FINAL' : progress.groupTables[group].some((row) => row.played) ? 'EN JUEGO' : 'POR EMPEZAR'}</span>}><table><thead><tr><th>#</th><th>SELECCIÓN</th><th>PJ</th><th>DG</th><th>PTS</th></tr></thead><tbody>{progress.groupTables[group].map((row,index) => { const nation=uiNations.find((item)=>item.id===row.nationId); if(!nation)return null; return <tr key={nation.id} className={`${nation.id===campaign.nationId?'is-user':''} ${index<2?'is-qualified':index===2?'is-third':''}`}><td>{index+1}</td><td><Flag code={nation.flagCode} label={nation.name} size="sm"/><b>{nation.shortName}</b>{nation.id===campaign.nationId&&<Crown/>}</td><td>{row.played}</td><td>{row.goalDifference>0?'+':''}{row.goalDifference}</td><td><b>{row.points}</b></td></tr>})}</tbody></table><footer><span><i/> Clasificación directa</span><span><i/> Mejor tercero</span></footer></Panel>)}</div>}
+    {tab==='grupos'&&<div className="tournament-paged"><nav className="tournament-pager"><button disabled={groupPage===0} onClick={()=>setGroupPage((page)=>Math.max(0,page-1))}><ChevronLeft/> ANTERIORES</button><span>GRUPOS {groupPage*4+1}–{Math.min(12,groupPage*4+4)} · PÁGINA {groupPage+1}/3</span><button disabled={groupPage===2} onClick={()=>setGroupPage((page)=>Math.min(2,page+1))}>SIGUIENTES <ChevronRight/></button></nav><div className="group-grid">{groups.slice(groupPage*4,groupPage*4+4).map((group) => <Panel key={group} className="group-card" eyebrow="FASE DE GRUPOS" title={`Grupo ${group}`} action={<span className={`group-status ${progress.groupComplete[group] ? 'is-complete' : ''}`}>{progress.groupComplete[group] ? 'FINAL' : progress.groupTables[group].some((row) => row.played) ? 'EN JUEGO' : 'POR EMPEZAR'}</span>}><table><thead><tr><th>#</th><th>SELECCIÓN</th><th>PJ</th><th>DG</th><th>PTS</th></tr></thead><tbody>{progress.groupTables[group].map((row,index) => { const nation=uiNations.find((item)=>item.id===row.nationId); if(!nation)return null; return <tr key={nation.id} className={`${nation.id===campaign.nationId?'is-user':''} ${index<2?'is-qualified':index===2?'is-third':''}`}><td>{index+1}</td><td><Flag code={nation.flagCode} label={nation.name} size="sm"/><b>{nation.shortName}</b>{nation.id===campaign.nationId&&<Crown/>}</td><td>{row.played}</td><td>{row.goalDifference>0?'+':''}{row.goalDifference}</td><td><b>{row.points}</b></td></tr>})}</tbody></table><footer><span><i/> Clasificación directa</span><span><i/> Mejor tercero</span></footer></Panel>)}</div></div>}
     {tab==='cuadro'&&<Bracket progress={progress} onWatch={(fixture)=>navigate(`/partido?fixture=${fixture.id}`)}/>}
     {tab==='calendario'&&<TournamentCalendar progress={progress} campaignDate={campaign.date} controlledNationId={campaign.nationId} onWatch={(fixture)=>navigate(`/partido?fixture=${fixture.id}`)}/>}
     {tab==='estadisticas'&&<TournamentStats progress={progress} results={campaign.matchResults}/>}
@@ -894,6 +994,7 @@ export function Tournament() {
 const stageTitles: Record<ResolvedCampaignFixture['stage'], string> = { GROUP:'GRUPOS', ROUND_OF_32:'DIECISEISAVOS', ROUND_OF_16:'OCTAVOS', QUARTER_FINAL:'CUARTOS', SEMI_FINAL:'SEMIFINALES', THIRD_PLACE:'TERCER PUESTO', FINAL:'FINAL' }
 
 function Bracket({progress,onWatch}:{progress:CampaignProgress;onWatch:(fixture:ResolvedCampaignFixture)=>void}) {
+  const [roundPage,setRoundPage]=useState(0)
   const rounds: Array<{title:string;fixtures:ResolvedCampaignFixture[]}> = [
     {title:'DIECISEISAVOS',fixtures:progress.fixtures.filter((fixture)=>fixture.stage==='ROUND_OF_32')},
     {title:'OCTAVOS',fixtures:progress.fixtures.filter((fixture)=>fixture.stage==='ROUND_OF_16')},
@@ -905,7 +1006,7 @@ function Bracket({progress,onWatch}:{progress:CampaignProgress;onWatch:(fixture:
   const flag=(id:string|undefined)=>uiNations.find((nation)=>nation.id===id)
   const bronze=progress.fixtures.find((fixture)=>fixture.stage==='THIRD_PLACE')
   const champion=uiNations.find((nation)=>nation.id===progress.championNationId)
-  return <div className="bracket panel"><header><div><span className="eyebrow">RUTA A LA FINAL</span><h2>Cuadro eliminatorio vivo</h2></div><span>{progress.groupStageComplete?<><CheckCircle2/> Emparejamientos oficiales resueltos</>:<><LockKeyhole/> Se abrirá al cerrar los doce grupos</>}</span></header>{progress.completed&&champion&&<div className="champion-ribbon"><Crown/><span><small>CAMPEÓN DEL MUNDO</small><b>{champion.name}</b></span><Flag code={champion.flagCode} label={champion.name} size="lg"/></div>}<div className="bracket__rounds bracket__rounds--five">{rounds.map((round)=><section key={round.title}><h3>{round.title}</h3>{round.fixtures.map((fixture)=>{const home=flag(fixture.homeNationId);const away=flag(fixture.awayNationId);return <div className={`bracket-match bracket-match--${fixture.status}`} key={fixture.id}><span><i>{home?<Flag code={home.flagCode} label={home.name} size="sm"/>:<Shield/>}</i><b>{label(fixture.homeNationId,fixture.homeSlot)}</b>{fixture.result&&<strong>{fixture.result.home}</strong>}</span><em>—</em><span><i>{away?<Flag code={away.flagCode} label={away.name} size="sm"/>:<Shield/>}</i><b>{label(fixture.awayNationId,fixture.awaySlot)}</b>{fixture.result&&<strong>{fixture.result.away}</strong>}</span><small>PARTIDO {fixture.matchNumber} · {fixture.date.slice(5,10).replace('-','/')}</small>{fixture.status!=='blocked'&&<button onClick={()=>onWatch(fixture)}><Play/>{fixture.status==='played'?'RECREAR':'VER'}</button>}</div>})}</section>)}</div>{bronze&&<div className="bronze-match"><Medal/><span><small>TERCER PUESTO · PARTIDO 103</small><b>{label(bronze.homeNationId,bronze.homeSlot)} {bronze.result?`${bronze.result.home} — ${bronze.result.away}`:'vs'} {label(bronze.awayNationId,bronze.awaySlot)}</b></span>{bronze.status!=='blocked'&&<button onClick={()=>onWatch(bronze)}><Play/> VER</button>}</div>}</div>
+  return <div className="bracket panel"><header><div><span className="eyebrow">RUTA A LA FINAL</span><h2>Cuadro eliminatorio vivo</h2></div><span>{progress.groupStageComplete?<><CheckCircle2/> Emparejamientos oficiales resueltos</>:<><LockKeyhole/> Se abrirá al cerrar los doce grupos</>}</span></header><nav className="tournament-pager"><button disabled={roundPage===0} onClick={()=>setRoundPage(0)}><ChevronLeft/> PRIMEROS CRUCES</button><span>{roundPage===0?'DIECISEISAVOS · OCTAVOS':'CUARTOS · SEMIFINALES · FINAL'}</span><button disabled={roundPage===1} onClick={()=>setRoundPage(1)}>CAMINO FINAL <ChevronRight/></button></nav>{progress.completed&&champion&&<div className="champion-ribbon"><Crown/><span><small>CAMPEÓN DEL MUNDO</small><b>{champion.name}</b></span><Flag code={champion.flagCode} label={champion.name} size="lg"/></div>}<div className={`bracket__rounds bracket__rounds--page-${roundPage}`}>{rounds.slice(roundPage===0?0:2,roundPage===0?2:5).map((round)=><section key={round.title}><h3>{round.title}</h3>{round.fixtures.map((fixture)=>{const home=flag(fixture.homeNationId);const away=flag(fixture.awayNationId);return <div className={`bracket-match bracket-match--${fixture.status}`} key={fixture.id}><span><i>{home?<Flag code={home.flagCode} label={home.name} size="sm"/>:<Shield/>}</i><b>{label(fixture.homeNationId,fixture.homeSlot)}</b>{fixture.result&&<strong>{fixture.result.home}</strong>}</span><em>—</em><span><i>{away?<Flag code={away.flagCode} label={away.name} size="sm"/>:<Shield/>}</i><b>{label(fixture.awayNationId,fixture.awaySlot)}</b>{fixture.result&&<strong>{fixture.result.away}</strong>}</span><small>PARTIDO {fixture.matchNumber} · {fixture.date.slice(5,10).replace('-','/')}</small>{fixture.status!=='blocked'&&<button onClick={()=>onWatch(fixture)}><Play/>{fixture.status==='played'?'RECREAR':'VER'}</button>}</div>})}</section>)}</div>{bronze&&roundPage===1&&<div className="bronze-match"><Medal/><span><small>TERCER PUESTO · PARTIDO 103</small><b>{label(bronze.homeNationId,bronze.homeSlot)} {bronze.result?`${bronze.result.home} — ${bronze.result.away}`:'vs'} {label(bronze.awayNationId,bronze.awaySlot)}</b></span>{bronze.status!=='blocked'&&<button onClick={()=>onWatch(bronze)}><Play/> VER</button>}</div>}</div>
 }
 
 const calendarStageLabels: Record<CalendarStage, string> = {
@@ -971,6 +1072,8 @@ function TournamentCalendar({
   const [query, setQuery] = useState('')
   const [stage, setStage] = useState<CalendarStage>('ALL')
   const [scope, setScope] = useState<CalendarScope>('ALL')
+  const [view, setView] = useState<'overview'|'agenda'|'venues'>('overview')
+  const [calendarPage, setCalendarPage] = useState(0)
   const nationLabels = useMemo(() => Object.fromEntries(uiNations.map((nation) => [nation.id, `${nation.name} ${nation.shortName}`])), [])
   const venueLabels = useMemo(() => Object.fromEntries(tournamentData.venues.map((venue) => [venue.id, `${venue.name} ${venue.city}`])), [])
   const spotlight = useMemo(() => selectSpotlightFixture(progress.fixtures, controlledNationId), [controlledNationId, progress.fixtures])
@@ -983,6 +1086,8 @@ function TournamentCalendar({
     venueLabels,
   }), [controlledNationId, nationLabels, progress.fixtures, query, scope, stage, venueLabels])
   const days = useMemo(() => groupCalendarDays(fixtures, campaignDate, spotlight?.id), [campaignDate, fixtures, spotlight?.id])
+  const calendarPages = Math.max(1,Math.ceil(days.length/2))
+  const visibleDays = days.slice(Math.min(calendarPage,calendarPages-1)*2,Math.min(calendarPage,calendarPages-1)*2+2)
   const route = useMemo(() => stageCalendarSummaries(progress.fixtures), [progress.fixtures])
   const home = uiNations.find((nation) => nation.id === spotlight?.homeNationId)
   const away = uiNations.find((nation) => nation.id === spotlight?.awayNationId)
@@ -997,7 +1102,8 @@ function TournamentCalendar({
     .sort((left, right) => right.fixtures - left.fixtures || left.host.city.localeCompare(right.host.city))
     .slice(0, 6), [progress.fixtures])
 
-  return <div className="world-calendar">
+  return <div className="world-calendar"><nav className="world-calendar-modes"><button className={view==='overview'?'is-active':''} onClick={()=>setView('overview')}><Trophy/> JORNADA MUNDIAL</button><button className={view==='agenda'?'is-active':''} onClick={()=>setView('agenda')}><CalendarDays/> AGENDA</button><button className={view==='venues'?'is-active':''} onClick={()=>setView('venues')}><MapPin/> SEDES</button></nav>
+    {view==='overview'&&<>
     {spotlight && <section
       className={`calendar-spotlight calendar-spotlight--${spotlightStatus?.key ?? 'scheduled'}`}
       style={{ '--home-team': home?.primaryColor ?? '#23d7e8', '--away-team': away?.primaryColor ?? '#e7b84a' } as React.CSSProperties}
@@ -1044,19 +1150,21 @@ function TournamentCalendar({
         </button>
       })}</div>
     </section>
+    </>}
 
-    <section className="calendar-hosts panel">
+    {view==='venues'&&<section className="calendar-hosts panel">
       <header><div><span className="eyebrow"><Globe2 /> 3 PAÍSES · 16 SEDES</span><h2>Los grandes escenarios</h2></div><span>Canadá · México · Estados Unidos</span></header>
       <div>{venueCounts.map(({ host, fixtures: venueFixtures }) => <article key={host.id}><MapPin /><span><small>{host.country.toUpperCase()}</small><b>{host.city}</b><em>{host.name}</em></span><strong>{venueFixtures}<small>PARTIDOS</small></strong><i>{host.capacity.toLocaleString('es-ES')} asientos</i></article>)}</div>
-    </section>
+    </section>}
 
-    <section className="calendar-board panel">
+    {view==='agenda'&&<section className="calendar-board panel">
       <header className="calendar-board__header"><div><span className="eyebrow"><CalendarDays /> AGENDA OFICIAL</span><h2>Cada jornada, cada estadio, cada historia</h2><p>{fixtures.length} partidos visibles · {days.length} días de competición</p></div><label className="calendar-search"><Search /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar selección, sede o partido…" /></label></header>
       <div className="calendar-filters">
         <div>{scopeLabels.map((item) => <button key={item.value} className={scope === item.value ? 'is-active' : ''} onClick={() => setScope(item.value)}>{item.value === 'MY_TEAM' && <Crown />}{item.label}</button>)}</div>
         <label><Filter /><span>FASE</span><select value={stage} onChange={(event) => setStage(event.target.value as CalendarStage)}>{Object.entries(calendarStageLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
       </div>
-      <div className="calendar-days">{days.length ? days.map((day) => <section key={day.date} className={`calendar-day-group ${day.isCampaignDay ? 'is-today' : ''} ${day.containsSpotlight ? 'has-spotlight' : ''}`}>
+      <nav className="tournament-pager"><button disabled={calendarPage===0} onClick={()=>setCalendarPage((page)=>Math.max(0,page-1))}><ChevronLeft/> ANTERIOR</button><span>DÍAS {Math.min(days.length,calendarPage*2+1)}–{Math.min(days.length,calendarPage*2+2)} · {calendarPage+1}/{calendarPages}</span><button disabled={calendarPage>=calendarPages-1} onClick={()=>setCalendarPage((page)=>Math.min(calendarPages-1,page+1))}>SIGUIENTE <ChevronRight/></button></nav>
+      <div className="calendar-days">{days.length ? visibleDays.map((day) => <section key={day.date} className={`calendar-day-group ${day.isCampaignDay ? 'is-today' : ''} ${day.containsSpotlight ? 'has-spotlight' : ''}`}>
         <aside><span>{shortCalendarDate(day.date).split(' ')[0]}</span><b>{shortCalendarDate(day.date).split(' ')[1]}</b><small>{longCalendarDate(day.date).split(',')[0]}</small>{day.isCampaignDay && <em>HOY</em>}{day.containsSpotlight && !day.isCampaignDay && <em>DESTACADA</em>}</aside>
         <div><header><span>{longCalendarDate(day.date)}</span><small>{day.fixtures.length} partido{day.fixtures.length === 1 ? '' : 's'} · {new Set(day.fixtures.map((fixture) => fixture.venueId)).size} sede{new Set(day.fixtures.map((fixture) => fixture.venueId)).size === 1 ? '' : 's'}</small></header>
           <div className="calendar-match-grid">{day.fixtures.map((fixture) => {
@@ -1078,7 +1186,7 @@ function TournamentCalendar({
           })}</div>
         </div>
       </section>) : <EmptyState title="No hay partidos con estos filtros" text="Prueba otra fase, vuelve a mostrar todo el torneo o busca una selección diferente." action={<button className="button button--cyan" onClick={() => { setQuery(''); setStage('ALL'); setScope('ALL') }}>RESTABLECER CALENDARIO</button>} />}</div>
-    </section>
+    </section>}
   </div>
 }
 

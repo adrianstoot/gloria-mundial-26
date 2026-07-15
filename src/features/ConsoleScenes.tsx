@@ -6,9 +6,22 @@ import { Flag } from '../components/Flag'
 import { PlayerPortrait } from '../components/PlayerPortrait'
 import { tournamentData } from '../data'
 import { deriveCampaignProgress } from './campaignProgress'
-import { playerCaps, playerClub, playerName, playerOverall, playersFor, uiNations, type UIPlayer } from './ui-model'
+import { playerCaps, playerClub, playerName, playerOverall, playersFor, uiNations, type CampaignUIState, type UIPlayer } from './ui-model'
 
 const dayLabel = (date: string) => new Intl.DateTimeFormat('es-ES', { weekday: 'short', day: 'numeric' }).format(new Date(`${date}T12:00:00`)).toUpperCase()
+const dayPeriod = (time: string) => {
+  const hour = Number(time.slice(0, 2))
+  if (hour < 12) return 'MAÑANA'
+  if (hour < 16) return 'MEDIODÍA'
+  if (hour < 20) return 'TARDE'
+  return 'NOCHE'
+}
+const eventConsequence = (event: CampaignUIState['agenda'][number]) => {
+  const entries = Object.entries(event.skipEffects)
+  if (!entries.length) return 'Si la omites: no obtienes el beneficio'
+  const labels: Record<string, string> = { pressure: 'presión', federation: 'confianza', physicalRisk: 'riesgo físico', fatigue: 'fatiga', morale: 'moral' }
+  return `Si la omites: ${entries.map(([key, value]) => `${labels[key] ?? key} ${Number(value) > 0 ? '+' : ''}${value}`).join(' · ')}`
+}
 
 export function ConsoleDashboard() {
   const navigate = useNavigate()
@@ -27,11 +40,15 @@ export function ConsoleDashboard() {
   const opponentId = next?.homeNationId === campaign.nationId ? next.awayNationId : next?.homeNationId
   const opponent = campaignNations.find((item) => item.id === opponentId)
   const venue = tournamentData.venues.find((item) => item.id === next?.venueId)
-  const days = [...new Set(campaign.agenda.map((item) => item.date))].slice(0, 7)
+  const days = Array.from({ length: 7 }, (_, offset) => {
+    const day = new Date(`${campaign.date}T12:00:00`)
+    day.setDate(day.getDate() + offset)
+    return day.toISOString().slice(0, 10)
+  })
   const [selectedDate, setSelectedDate] = useState(campaign.date)
-  const [eventIndex, setEventIndex] = useState(0)
   const selectedEvents = campaign.agenda.filter((item) => item.date === selectedDate && item.status === 'pending')
-  const activeEvent = selectedEvents[Math.min(eventIndex, Math.max(0, selectedEvents.length - 1))]
+  const todayEvents = campaign.agenda.filter((item) => item.date === campaign.date && item.status === 'pending')
+  const nextMission = todayEvents.find((item) => item.type !== 'match') ?? todayEvents[0]
   const countdown = next
     ? Math.max(0, Math.round((new Date(`${next.date.slice(0, 10)}T12:00:00`).getTime() - new Date(`${campaign.date}T12:00:00`).getTime()) / 86_400_000))
     : 0
@@ -39,11 +56,10 @@ export function ConsoleDashboard() {
 
   useEffect(() => {
     setSelectedDate(campaign.date)
-    setEventIndex(0)
   }, [campaign.date])
 
   const tiles = [
-    { tone: 'cyan', icon: Users, eyebrow: 'PLANTILLA', title: campaign.squadConfirmed ? 'Los 26' : 'Cerrar la lista', meta: `${campaign.squadIds.length}/26 · ${campaign.squadIds.filter((id) => playersFor(campaign.nationId).find((player) => player.id === id)?.position === 'GK').length}/3 POR`, route: '/juego/convocatoria' },
+    { tone: 'cyan', icon: CalendarDays, eyebrow: 'MISIONES DE HOY', title: todayEvents.length ? `${todayEvents.length} pendientes` : 'Día despejado', meta: nextMission?.title ?? 'Listo para continuar', route: '/juego' },
     { tone: 'coral', icon: Dumbbell, eyebrow: 'PREPARACIÓN', title: 'Vida del equipo', meta: `Fatiga ${campaign.fatigue}% · recuperación ${campaign.recovery}%`, route: '/juego/concentracion' },
     { tone: 'lilac', icon: Target, eyebrow: 'PLAN DE JUEGO', title: campaign.tactic, meta: `Familiaridad ${campaign.tacticalFamiliarity}%`, route: '/juego/tacticas' },
     { tone: 'mint', icon: Trophy, eyebrow: 'MUNDIAL', title: `${progress.stats.matchesPlayed}/104`, meta: progress.groupStageComplete ? 'Eliminatorias' : `Fase de grupos · ${nation?.group ?? '—'}`, route: '/juego/mundial' },
@@ -51,21 +67,18 @@ export function ConsoleDashboard() {
 
   return <section className="console-dashboard">
     <div className="console-dashboard__background" />
-    <header className="console-dashboard__headline"><div><span><Sparkles /> CENTRO MUNDIAL · DÍA A DÍA</span><h1>Tu misión empieza<br/><em>en el calendario.</em></h1><p>Entra en las actividades que quieras o pulsa Continuar. Si omites una misión, el equipo conserva exactamente su estado actual.</p></div><aside><small>PRÓXIMO PARTIDO</small><b>{countdown}</b><span>{countdown === 0 ? 'HOY' : countdown === 1 ? 'DÍA' : 'DÍAS'}</span></aside></header>
+    <header className="console-dashboard__headline"><div><span><Sparkles /> CENTRO MUNDIAL · DÍA A DÍA</span><h1>Tu misión empieza<br/><em>en el calendario.</em></h1><p>Juega rápido o entra en cada misión para mejorar al equipo. Nada opcional bloquea el torneo y toda omisión muestra su efecto antes de avanzar.</p></div><aside><small>PRÓXIMO PARTIDO</small><b>{countdown}</b><span>{countdown === 0 ? 'HOY' : countdown === 1 ? 'DÍA' : 'DÍAS'}</span></aside></header>
 
     <div className="console-dashboard__layout">
       <section className="calendar-stage console-focus-card" data-console-focus tabIndex={0}>
         <header><div><small>SEMANA DE {nation?.shortName?.toUpperCase()}</small><h2>{new Intl.DateTimeFormat('es-ES',{month:'long',year:'numeric'}).format(new Date(`${campaign.date}T12:00:00`))}</h2></div><button onClick={() => navigate('/juego/mundial')}>CALENDARIO COMPLETO <ChevronRight /></button></header>
-        <nav className="calendar-stage__days">{days.map((date) => { const events=campaign.agenda.filter((item)=>item.date===date&&item.status==='pending'); const hasMatch=events.some((item)=>item.type==='match'); return <button key={date} className={`${selectedDate===date?'is-active':''} ${hasMatch?'has-alert':''}`} onClick={()=>{setSelectedDate(date);setEventIndex(0)}}><small>{date===campaign.date?'HOY':dayLabel(date).split(' ')[0]}</small><b>{dayLabel(date).split(' ')[1]}</b><i>{events.length}</i>{hasMatch&&<em>⚽</em>}</button> })}</nav>
-        <div className="calendar-stage__mission">{activeEvent ? <>
-          <button className={`calendar-mission-card is-${activeEvent.priority}`} onClick={()=>navigate(activeEvent.route)}>
-            <time><b>{activeEvent.time}</b><span>{activeEvent.durationMinutes} MIN</span></time>
-            <span><small>{activeEvent.type === 'match' ? 'PARTIDO · MISIÓN PRINCIPAL' : 'MISIÓN OPCIONAL · ' + activeEvent.type.toUpperCase()}</small><h3>{activeEvent.title}</h3><p>{activeEvent.summary}</p><footer>{activeEvent.effects.slice(0,3).map((effect)=><i key={effect}>{effect}</i>)}</footer></span>
-            <strong>{activeEvent.type === 'match' ? 'JUGAR PARTIDO' : 'ABRIR MISIÓN'} <ChevronRight/></strong>
-          </button>
-          <nav aria-label="Cambiar evento"><button disabled={eventIndex===0} onClick={()=>setEventIndex((value)=>Math.max(0,value-1))}><ChevronLeft/></button><span><b>{eventIndex+1}</b> / {selectedEvents.length}</span><button disabled={eventIndex>=selectedEvents.length-1} onClick={()=>setEventIndex((value)=>Math.min(selectedEvents.length-1,value+1))}><ChevronRight/></button></nav>
-        </> : <div className="calendar-empty"><CalendarDays/><b>Jornada despejada</b><span>Álex no ha detectado tareas pendientes. Puedes revisar el equipo o avanzar.</span></div>}</div>
-        <footer><span><Sparkles/> {activeEvent?.type === 'match' ? 'ÁLEX: ES HORA DE JUGAR' : 'ÁLEX: TODAS LAS DECISIONES PREVIAS SON OPCIONALES'}</span><span>{selectedEvents.length} MISIONES DISPONIBLES</span></footer>
+        <nav className="calendar-stage__days">{days.map((date) => { const events=campaign.agenda.filter((item)=>item.date===date&&item.status==='pending').slice(0,4); const hasMatch=events.some((item)=>item.type==='match'); return <button key={date} className={`${selectedDate===date?'is-active':''} ${hasMatch?'has-alert':''}`} onClick={()=>setSelectedDate(date)}><small>{date===campaign.date?'HOY':dayLabel(date).split(' ')[0]}</small><b>{dayLabel(date).split(' ')[1]}</b><i>{events.length}</i><span className="calendar-day-slots">{events.map((item)=><em key={item.id} className={`is-${item.type}`} title={`${item.time} · ${item.title}`}/>)}</span></button> })}</nav>
+        <div className="calendar-stage__mission-list">{selectedEvents.length ? selectedEvents.slice(0,4).map((event) => <button key={event.id} className={`calendar-mission-compact is-${event.type} is-${event.priority}`} onClick={()=>navigate(event.route)}>
+          <header><span>{dayPeriod(event.time)}</span><time>{event.time}</time><i>{event.mandatory ? 'PRINCIPAL' : 'OPCIONAL'}</i></header>
+          <div><small>{event.type.toUpperCase()} · {event.durationMinutes} MIN</small><h3>{event.title}</h3><p>{event.summary}</p></div>
+          <footer><span><Check/> {event.recommendedAction}</span><em>{eventConsequence(event)}</em><ChevronRight/></footer>
+        </button>) : <div className="calendar-empty"><CalendarDays/><b>Jornada despejada</b><span>Álex no ha detectado tareas pendientes. Puedes revisar el equipo o avanzar.</span></div>}</div>
+        <footer><span><Sparkles/> {selectedEvents.some((item)=>item.type==='match') ? 'ÁLEX: EL PARTIDO ES LA MISIÓN PRINCIPAL' : `ÁLEX: ${selectedEvents[0]?.recommendedAction ?? 'PUEDES AVANZAR SIN BLOQUEOS'}`}</span><span>{selectedEvents.length} MISIONES DISPONIBLES</span></footer>
       </section>
 
       <aside className="console-dashboard__side">
